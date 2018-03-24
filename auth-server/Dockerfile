@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM java:8-jre
 MAINTAINER Avijit Chatterjee <avijit.liberty@gmail.com>
 
 ADD ./target/auth-server.jar /app/
