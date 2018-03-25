@@ -9,15 +9,6 @@ spring:
       password: ${CONFIG_SERVICE_PASSWORD}
       username: user
 
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    registerWithEureka: false
-    fetchRegistry: false
-    server:
-      waitTimeInMsWhenSyncEmpty: 0
-
 ---
 
 spring:
@@ -30,12 +21,3 @@ spring:
       fail-fast: true
       password: ${CONFIG_SERVICE_PASSWORD}
       username: user
-
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    registerWithEureka: false
-    fetchRegistry: false
-    server:
-      waitTimeInMsWhenSyncEmpty: 0

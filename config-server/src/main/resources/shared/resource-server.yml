@@ -1,0 +1,59 @@
+spring:
+  profiles: default
+  application:
+    name: resource-server
+
+# Make the application available at http://localhost:8081
+server:
+  port: 8081
+  contextPath: /services
+
+# Configure the User Info Resource Server details
+security:
+  oauth2:
+    resource:
+      user-info-uri: http://localhost:9090/auth/user
+  basic:
+    enabled: false
+    
+logging:
+  level:
+    org.springframework.security: info
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+      
+---
+
+spring:
+  profiles: docker
+  application:
+    name: resource-server
+    
+# Make the application available at http://localhost:8081/services
+server:
+  port: 8081
+  contextPath: /services
+
+# Configure the User Info Resource Server details
+security:
+  oauth2:
+    resource:
+      user-info-uri: http://auth-server:9090/auth/user
+  basic:
+    enabled: false
+    
+logging:
+  level:
+    org.springframework.security: info
+    
+#eureka:
+# Register our microservices to Eureka using hostnames in a Docker environment will not work, they will all get
+# one and the same hostname. Instead we configure them to use its IP address during registration with Eureka.
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    serviceUrl:
+#      defaultZone: http://eureka-server:8761/eureka/
