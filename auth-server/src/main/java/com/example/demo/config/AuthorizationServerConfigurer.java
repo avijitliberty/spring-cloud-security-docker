@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -28,6 +29,8 @@ import com.example.demo.services.UserService;
 @Order(6)
 public class AuthorizationServerConfigurer extends AuthorizationServerConfigurerAdapter {
 
+	@Value("${security.oauth2.client.registered-redirect-uri}")
+	private String redirectUri;
 	@Autowired
 	private UserService userService;
     /* To use password grant you need to provide an authentication manager to the authorization server, 
@@ -70,7 +73,7 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
                 .withClient("secureui")
                 .secret("secureui-secret")
                 // Only allow redirecting to 'http://localhost:8080/**' when logging in
-                .redirectUris("http://localhost:8080/")
+                .redirectUris(redirectUri)
                 // We only use the authorization_code grant type, with support for refresh tokens
                 .authorizedGrantTypes("authorization_code", "refresh_token")
                 // We can define our own scopes here

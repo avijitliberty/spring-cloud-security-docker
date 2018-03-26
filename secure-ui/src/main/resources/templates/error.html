@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Spring Cloud Netflix Docker - Error page</title>
+    </head>
+    <body>
+        <div th:replace="home::LoggedInChild"></div>
+        <h1>Spring Cloud Netflix Docker - SecureUI</h1>
+        <p th:text="${errorCode}">404</p>
+        <p th:utext="${errorMessage}">Error java.lang.NullPointerException</p>
+        <p>Click <a th:href="@{/}">here</a> to go to home.</p>
+    </body>
+</html>

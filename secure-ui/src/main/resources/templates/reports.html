@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<title>Spring Cloud Netflix Docker - Reports Page</title>
+</head>
+<body>
+	<div th:replace="home::LoggedInChild"></div>
+	<h1>Spring Cloud Netflix Docker - SecureUI</h1>
+
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<p>
+				This is the <b>administration</b> zone
+			</p>
+			<p>
+				Only authenticated users with role <b>ADMIN</b> are allowed to see
+				this page.
+			</p>
+
+			<table class="table table-striped">
+				<tr>
+					<th>Station ID</th>
+					<th>Plate</th>
+					<th>Timestamp</th>
+				</tr>
+				<tr th:each="toll : ${tolls}">
+					<td th:text="${toll.stationId}"></td>
+					<td th:text="${toll.licensePlate}"></td>
+					<td th:text="${toll.timestamp}"></td>
+				</tr>
+			</table>
+			
+			<table class="table table-striped">
+				<tr>
+					<th>User ID</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Roles</th>
+					<th>Enabled</th>
+				</tr>
+				<tr th:each="user : ${users}">
+					<td th:text="${user.id}"></td>
+					<td th:text="${user.name}"></td>
+					<td th:text="${user.email}"></td>
+					<td th:text="${user.roles}"></td>
+					<td th:text="${user.enabled}"></td>
+				</tr>
+			</table>
+
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+	<p>
+		Click <a th:href="@{/}">here</a> to go to home.
+	</p>
+</body>
+</html>

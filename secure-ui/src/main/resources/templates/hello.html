@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+        <title>Spring Cloud Netflix Docker - Hello Page</title>
+    </head>
+    <body>
+        <div th:replace="home::LoggedInChild"></div>
+        <h1>Spring Cloud Netflix Docker - SecureUI</h1>
+        
+        <p>This is the <b>administration</b> zone</p>
+        <p>Only authenticated users with role <b>ADMIN</b> are allowed to see this page.</p>
+        
+        <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+        <p>Click <a th:href="@{/}">here</a> to go to home.</p>
+    </body>
+</html>

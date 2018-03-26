@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Spring Cloud Netflix Docker - 403 page</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <div th:replace="home::LoggedInChild"></div>
+        <h1>Spring Cloud Netflix Docker - SecureUI</h1>
+        <h2>FORBIDDEN! You must approve at least toll_read scope.</h2>
+        <p>Click <a th:href="@{/}">here</a> to go to home.</p>
+    </body>
+</html>

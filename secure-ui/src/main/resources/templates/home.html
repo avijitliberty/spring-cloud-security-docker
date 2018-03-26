@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<title>Spring Cloud Netflix Docker - Home Page</title>
+<style>
+  #home div.child {display: none;}
+</style>
+</head>
+<body id="home">
+    <div th:fragment="LoggedInhome" sec:authorize="isAuthenticated()">
+		Logged user: <span sec:authentication="name">Bob</span> | 
+		Roles: <span sec:authentication="authorities">[ROLE_USER,ROLE_ADMIN]</span> |
+		<form th:action="@{/logout}" method="post" style="display: inline">
+			<input type="submit" value="Logout" />
+		</form>
+	</div>
+	<div th:fragment="LoggedOuthome" sec:authorize="!isAuthenticated()">
+		Logged user: <span sec:authentication="name">Bob</span> | 
+		Roles: <span sec:authentication="authorities">[ROLE_USER,ROLE_ADMIN]</span> |
+		<form th:action="@{/login}" method="post" style="display: inline">
+			<input type="submit" value="Login" />
+		</form>
+	</div>
+	<div th:fragment="LoggedInChild" class="child" sec:authorize="isAuthenticated()">
+		Logged user: <span sec:authentication="name">Bob</span> | 
+		Roles: <span sec:authentication="authorities">[ROLE_USER,ROLE_ADMIN]</span>
+	</div>
+		
+	<h1>Spring Cloud Netflix Docker - SecureUI</h1>
+	<p>This is a public page, but you can navigate to protected pages
+		to trigger authentication.</p>
+	<p>Different content is shown depending on the role of the
+		authenticated user.</p>
+
+	<p>This content is only shown to <b>administrators</b>.</p>
+	<p>
+		Click <a th:href="@{/hello}">here</a> to see a greeting.
+	</p>
+	
+	<p>This content is only shown to <b>users</b>.</p>
+	<p>
+		Click <a th:href="@{/time}">here</a> to see current time.
+	</p>
+	
+	<p>This content is only shown to authenticated <b>administrators</b> with <b>read</b> role.</p>
+	<p>
+		Click <a th:href="@{/reports}">here</a> to see tolldata.
+	</p>
+	
+	<p>This content is only shown to authenticated <b>administrators</b> with <b>read</b> role.</p>
+	<p>
+		Click <a th:href="@{/users}">here</a> to see users.
+	</p>
+	
+	<h2>Exception handling</h2>
+	<ul>
+		<li>You can <a href="error.html" th:href="@{/simulateError}">simulate
+				an exception</a> to see custom ErrorPage.
+		</li>
+	</ul>
+	
+</body>
+</html>

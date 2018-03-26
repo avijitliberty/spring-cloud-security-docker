@@ -1,0 +1,87 @@
+spring:
+  profiles: default
+  thymeleaf:
+    cache: false
+  application:
+    name: secure-ui
+
+# Make the application available at http://localhost:8080
+# These are default settings, but we add them for clarity.
+server:
+  port: 8080
+  contextPath: /
+  session:
+    cookie:
+      name: SECUREUISESSION
+
+# Configure the Authorization Server and User Info Resource Server details
+security:
+  oauth2:
+    client:
+      accessTokenUri: http://localhost:9090/auth/oauth/token
+      userAuthorizationUri: http://localhost:9090/auth/oauth/authorize
+      logoutUri: http://localhost:9090/auth/exit
+      clientId: secureui
+      clientSecret: secureui-secret
+      #scope: toll_read, toll_report
+    resource:
+      user-info-uri: http://localhost:9090/auth/user
+  basic:
+    enabled: false
+    
+logging:
+  level:
+    org.springframework.security: info
+
+report:
+  url: http://localhost:8081/services/tolldata
+  
+users:
+  url: http://localhost:9090/auth/users
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+      
+---
+
+spring:
+  profiles: docker
+  thymeleaf:
+    cache: false
+  application:
+    name: secure-ui
+
+# Make the application available at http://localhost:8080
+# These are default settings, but we add them for clarity.
+server:
+  port: 8080
+  contextPath: /
+  session:
+    cookie:
+      name: SECUREUISESSION
+
+# Configure the Authorization Server and User Info Resource Server details
+security:
+  oauth2:
+    client:
+      accessTokenUri: http://${DOMAIN_NAME:localhost}:9090/auth/oauth/token
+      userAuthorizationUri: http://${DOMAIN_NAME:localhost}:9090/auth/oauth/authorize
+      logoutUri: http://${DOMAIN_NAME:localhost}:9090/auth/exit
+      clientId: secureui
+      clientSecret: secureui-secret
+    resource:
+      user-info-uri: http://auth-server:9090/auth/user
+  basic:
+    enabled: false
+    
+logging:
+  level:
+    org.springframework.security: info 
+
+report:
+  url: http://resource-server:8081/services/tolldata
+
+users:
+  url: http://auth-server:9090/auth/users
