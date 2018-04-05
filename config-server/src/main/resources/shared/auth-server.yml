@@ -67,4 +67,4 @@ security:
     
 logging:
   level:
-    org.springframework.security: info
+    org.springframework.security: debug

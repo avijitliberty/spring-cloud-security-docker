@@ -1,0 +1,106 @@
+version: '2.1'
+services:
+  oauth2:
+    image: mysql
+    mem_limit: 1073741824
+    container_name: oauth2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-hoauth2", "-uroot", "-poauth2-password!"]
+      interval: 5s
+      timeout: 50s
+      retries: 10
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=oauth2-password!
+      - MYSQL_DATABASE=oauth2-db
+      - MYSQL_USER=oauth2-user
+      - MYSQL_PASSWORD=oauth2-password
+    networks:
+      - oauth2
+    volumes:
+      - /home/avijit/oauth2-db:/var/lib/mysql
+  config-server:
+    image: avijitchatterjee/config-server
+    mem_limit: 1073741824
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-I", "http://config-server:8888"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "8888:8888"
+    environment:
+      - CONFIG_SERVICE_PASSWORD=123456
+      - DOMAIN_NAME=192.168.56.10
+    networks:
+      - oauth2
+    depends_on:
+      oauth2:
+        condition: service_healthy
+  eureka-server:
+    image: avijitchatterjee/eureka-server
+    mem_limit: 1073741824
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://eureka-server:8761"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "8761:8761"
+    environment:
+      - CONFIG_SERVICE_PASSWORD=123456
+    networks:
+      - oauth2
+    depends_on:
+      config-server:
+        condition: service_healthy
+  auth-server:
+    image: avijitchatterjee/auth-server
+    mem_limit: 1073741824
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    environment:
+      - CONFIG_SERVICE_PASSWORD=123456
+      - DOMAIN_NAME=192.168.56.10
+    networks:
+      - oauth2
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+  resource-server:
+    image: avijitchatterjee/resource-server
+    mem_limit: 1073741824
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - CONFIG_SERVICE_PASSWORD=123456
+    networks:
+      - oauth2
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+  secure-ui:
+    image: avijitchatterjee/secure-ui
+    mem_limit: 1073741824
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - CONFIG_SERVICE_PASSWORD=123456
+      - DOMAIN_NAME=192.168.56.10
+    networks:
+      - oauth2
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+        
+networks:
+  oauth2:
+    external:
+      name: oauth2
