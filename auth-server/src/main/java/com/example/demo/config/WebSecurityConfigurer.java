@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 /**
  * Our Web Security configuration for the Authorization Server.
@@ -25,6 +26,9 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	private AuthenticationFailureHandler authenticationFailureHandler;
 
 	@Override
     @Bean
@@ -43,7 +47,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                     .antMatchers("/login**","/users","/users/*").permitAll()
                     .anyRequest().authenticated()
                 .and().formLogin().loginPage("/login")
-                .failureUrl("/login-error")
+                .failureHandler(authenticationFailureHandler)
                 .and().csrf().disable();
     }
 

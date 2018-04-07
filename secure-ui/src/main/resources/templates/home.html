@@ -34,24 +34,24 @@
 	<p>Different content is shown depending on the role of the
 		authenticated user.</p>
 
-	<p>This content is only shown to <b>administrators</b>.</p>
+<!-- 	<p>This content is only shown to <b>administrators</b>.</p> -->
 	<p>
-		Click <a th:href="@{/hello}">here</a> to see a greeting.
+		Click <a th:href="@{/hello}">here</a> to see a greeting. (<b>administrators</b> only)
 	</p>
 	
-	<p>This content is only shown to <b>users</b>.</p>
+<!-- 	<p>This content is only shown to <b>users</b>.</p> -->
 	<p>
-		Click <a th:href="@{/time}">here</a> to see current time.
+		Click <a th:href="@{/time}">here</a> to see current time. (<b>users</b> only)
 	</p>
 	
-	<p>This content is only shown to authenticated <b>administrators</b> with <b>read</b> role.</p>
+<!-- 	<p>This content is only shown to authenticated <b>administrators</b> with <b>read</b> role.</p> -->
 	<p>
-		Click <a th:href="@{/reports}">here</a> to see tolldata.
+		Click <a th:href="@{/reports}">here</a> to see tolldata. (<b>administrators</b> with <b>read</b> role only)
 	</p>
 	
-	<p>This content is only shown to authenticated <b>administrators</b> with <b>read</b> role.</p>
+<!-- 	<p>This content is only shown to authenticated <b>administrators</b> with <b>read</b> role.</p> -->
 	<p>
-		Click <a th:href="@{/users}">here</a> to see users.
+		Click <a th:href="@{/users}">here</a> to see users. (<b>administrators</b> only)
 	</p>
 	
 	<h2>Exception handling</h2>

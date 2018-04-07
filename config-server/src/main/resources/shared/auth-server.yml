@@ -28,7 +28,7 @@ security:
     
 logging:
   level:
-    org.springframework.security: info
+    org.springframework.security: debug
     
 eureka:
   client:
@@ -63,8 +63,8 @@ security:
     enabled: false
   oauth2:
     client:
-      registered-redirect-uri: http://${DOMAIN_NAME:localhost}:8080
+      registered-redirect-uri: http://${DOMAIN_NAME:secure-ui}:8080
     
 logging:
   level:
-    org.springframework.security: debug
+    org.springframework.security: info
