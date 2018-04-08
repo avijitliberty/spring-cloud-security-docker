@@ -1,0 +1,26 @@
+version: '2.1'
+services:
+  config-server:
+    build: config-server
+    ports:
+      - 8888:8888
+
+  eureka-server:
+    build: eureka-server
+    ports:
+      - 8761:8761
+
+  secure-ui:
+    build: secure-ui
+    ports:
+      - 8080:8080
+
+  auth-server:
+    build: auth-server
+    ports:
+      - 9090:9090
+
+  resource-server:
+    ports:
+      - 8081:8081
+    build: resource-server
