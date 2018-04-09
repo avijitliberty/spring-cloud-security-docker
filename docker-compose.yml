@@ -17,8 +17,6 @@ services:
       - MYSQL_DATABASE=oauth2-db
       - MYSQL_USER=oauth2-user
       - MYSQL_PASSWORD=oauth2-password
-    networks:
-      - oauth2
     volumes:
       - /home/avijit/oauth2-db:/var/lib/mysql
   config-server:
@@ -34,9 +32,7 @@ services:
       - "8888:8888"
     environment:
       - CONFIG_SERVICE_PASSWORD=123456
-      - DOMAIN_NAME=192.168.56.10
-    networks:
-      - oauth2
+      - DOMAIN_NAME=192.168.56.101
     depends_on:
       oauth2:
         condition: service_healthy
@@ -53,8 +49,6 @@ services:
       - "8761:8761"
     environment:
       - CONFIG_SERVICE_PASSWORD=123456
-    networks:
-      - oauth2
     depends_on:
       config-server:
         condition: service_healthy
@@ -66,9 +60,7 @@ services:
       - "9090:9090"
     environment:
       - CONFIG_SERVICE_PASSWORD=123456
-      - DOMAIN_NAME=192.168.56.10
-    networks:
-      - oauth2
+      - DOMAIN_NAME=192.168.56.101
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -80,8 +72,6 @@ services:
       - "8081:8081"
     environment:
       - CONFIG_SERVICE_PASSWORD=123456
-    networks:
-      - oauth2
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -93,14 +83,7 @@ services:
       - "8080:8080"
     environment:
       - CONFIG_SERVICE_PASSWORD=123456
-      - DOMAIN_NAME=192.168.56.10
-    networks:
-      - oauth2
+      - DOMAIN_NAME=192.168.56.101
     depends_on:
       eureka-server:
         condition: service_healthy
-        
-networks:
-  oauth2:
-    external:
-      name: oauth2
