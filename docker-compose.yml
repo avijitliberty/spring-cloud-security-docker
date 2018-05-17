@@ -4,12 +4,12 @@ services:
     image: mysql
     command: mysqld --default-authentication-plugin=mysql_native_password
     mem_limit: 1073741824
-    restart: unless-stopped
+    restart: always
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-hoauth2", "-uroot", "-poauth2-password!"]
-      interval: 5s
-      timeout: 50s
-      retries: 10
+      test: "/usr/bin/mysql --user=root --password=oauth2-password! --execute \"SHOW DATABASES;\""
+      interval: 3s
+      timeout: 1s
+      retries: 5
     ports:
       - "3306:3306"
     environment:
