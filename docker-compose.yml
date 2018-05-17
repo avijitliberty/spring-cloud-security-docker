@@ -2,8 +2,8 @@ version: '2.1'
 services:
   oauth2:
     image: mysql
+    command: mysqld --default-authentication-plugin=mysql_native_password
     mem_limit: 1073741824
-    container_name: oauth2
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-hoauth2", "-uroot", "-poauth2-password!"]
@@ -32,7 +32,7 @@ services:
       - "8888:8888"
     environment:
       - CONFIG_SERVICE_PASSWORD=123456
-      - DOMAIN_NAME=192.168.56.101
+      - DOMAIN_NAME=192.168.56.10
     depends_on:
       oauth2:
         condition: service_healthy
@@ -60,7 +60,7 @@ services:
       - "9090:9090"
     environment:
       - CONFIG_SERVICE_PASSWORD=123456
-      - DOMAIN_NAME=192.168.56.101
+      - DOMAIN_NAME=192.168.56.10
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -83,7 +83,7 @@ services:
       - "8080:8080"
     environment:
       - CONFIG_SERVICE_PASSWORD=123456
-      - DOMAIN_NAME=192.168.56.101
+      - DOMAIN_NAME=192.168.56.10
     depends_on:
       eureka-server:
         condition: service_healthy

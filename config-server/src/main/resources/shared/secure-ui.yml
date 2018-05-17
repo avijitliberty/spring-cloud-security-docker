@@ -68,7 +68,7 @@ security:
     client:
       accessTokenUri: http://auth-server:9090/auth/oauth/token
       userAuthorizationUri: http://${DOMAIN_NAME:auth-server}:9090/auth/oauth/authorize
-      logoutUri: http://auth-server:9090/auth/exit
+      logoutUri: http://${DOMAIN_NAME:auth-server}:9090/auth/exit
       clientId: secureui
       clientSecret: secureui-secret
     resource:
