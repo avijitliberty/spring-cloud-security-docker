@@ -14,7 +14,7 @@ spring:
       #ddl-auto: update
     show-sql: true
 
-# Make the application available at http://localhost:8081
+# Make the application available at http://localhost:8082
 server:
   port: 8082
   contextPath: /services

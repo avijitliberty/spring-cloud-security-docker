@@ -75,6 +75,17 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+  user-server:
+    image: avijitchatterjee/user-server
+    mem_limit: 1073741824
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      - CONFIG_SERVICE_PASSWORD=123456
+    depends_on:
+      eureka-server:
+        condition: service_healthy
   secure-ui:
     image: avijitchatterjee/secure-ui
     mem_limit: 1073741824
