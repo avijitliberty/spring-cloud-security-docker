@@ -1,9 +1,22 @@
 spring:
   profiles: default
+  datasource:
+    url: jdbc:mysql://192.168.56.10:3306/oauth2-db?useSSL=false
+    username: oauth2-user
+    password: oauth2-password
+    platform: mysql
+    initialize: true
+    schema: classpath:/scripts/schema.sql
+    data: classpath:/scripts/data.sql
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    #hibernate:
+      #ddl-auto: update
+    show-sql: true
 
 # Make the application available at http://localhost:8081
 server:
-  port: 8081
+  port: 8082
   contextPath: /services
 
 # Configure the User Info Resource Server details
@@ -27,10 +40,23 @@ eureka:
 
 spring:
   profiles: docker
+  datasource:
+    url: jdbc:mysql://oauth2:3306/oauth2-db?useSSL=false
+    username: oauth2-user
+    password: oauth2-password
+    platform: mysql
+    initialize: true
+    schema: classpath:/scripts/schema.sql
+    data: classpath:/scripts/data.sql
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    #hibernate:
+      #ddl-auto: update
+    show-sql: true
     
 # Make the application available at http://localhost:8081/services
 server:
-  port: 8081
+  port: 8082
   contextPath: /services
 
 # Configure the User Info Resource Server details

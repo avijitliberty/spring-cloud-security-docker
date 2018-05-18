@@ -5,9 +5,6 @@ spring:
     username: oauth2-user
     password: oauth2-password
     platform: mysql
-    initialize: true
-    schema: classpath:/scripts/schema.sql
-    data: classpath:/scripts/data.sql
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     #hibernate:
@@ -44,9 +41,6 @@ spring:
     username: oauth2-user
     password: oauth2-password
     platform: mysql
-    initialize: true
-    schema: classpath:/scripts/schema.sql
-    data: classpath:/scripts/data.sql
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     #hibernate:

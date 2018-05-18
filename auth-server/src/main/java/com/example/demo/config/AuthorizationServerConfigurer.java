@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -16,8 +17,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
-
-import com.example.demo.services.UserService;
 
 /**
  * Our configuration for the OAuth2 Authorization Server.
@@ -32,7 +31,7 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
 	@Value("${security.oauth2.client.registered-redirect-uri}")
 	private String redirectUri;
 	@Autowired
-	private UserService userService;
+	private UserDetailsService userService;
     /* To use password grant you need to provide an authentication manager to the authorization server, 
 	 * so it can authenticate users. If it's a Spring Boot application there is always an 
 	 * AuthenticationManager available to be @Autowired.*/

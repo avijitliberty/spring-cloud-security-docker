@@ -37,7 +37,7 @@ report:
   url: http://localhost:8081/services/tolldata
   
 users:
-  url: http://localhost:9090/auth/users
+  url: http://localhost:8082/services/users
 
 eureka:
   client:
@@ -84,4 +84,4 @@ report:
   url: http://resource-server:8081/services/tolldata
 
 users:
-  url: http://auth-server:9090/auth/users
+  url: http://user-server:8082/services/users
