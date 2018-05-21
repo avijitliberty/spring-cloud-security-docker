@@ -1,7 +1,5 @@
 spring:
-  profiles: 
-    active:
-    - test
+  profiles: test
   application:
     name: eureka-server
   

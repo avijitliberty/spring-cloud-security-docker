@@ -1,14 +1,11 @@
 spring:
   profiles: test
   application:
-    name: user-server
-  jpa:
-    database: HSQL
-    show-sql: true
+    name: resource-server
 
-# Make the application available at http://localhost:8082
+# Make the application available at http://localhost:8081
 server:
-  port: 8082
+  port: 8081
   contextPath: /services
   
 eureka:

@@ -1,0 +1,34 @@
+spring:
+  profiles: test
+  application:
+    name: secure-ui
+    
+eureka:
+  client:
+    register-with-eureka: false
+    fetchRegistry: false
+    
+# Make the application available at http://localhost:8080
+server:
+  port: 8080
+  contextPath: /
+  
+# Configure the Authorization Server and User Info Resource Server details
+security:
+  oauth2:
+    client:
+      accessTokenUri: http://localhost:9090/auth/oauth/token
+      userAuthorizationUri: http://localhost:9090/auth/oauth/authorize
+      logoutUri: http://localhost:9090/auth/exit
+      clientId: secureui
+      clientSecret: secureui-secret
+    resource:
+      user-info-uri: http://localhost:9090/auth/user
+  basic:
+    enabled: false
+    
+report:
+  url: http://localhost:8081/services/tolldata
+  
+users:
+  url: http://localhost:8082/services/users
