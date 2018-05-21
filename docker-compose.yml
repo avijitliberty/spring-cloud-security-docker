@@ -41,7 +41,7 @@ services:
     mem_limit: 1073741824
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://eureka-server:8761"]
+      test: ["CMD", "curl", "-I", "http://eureka-server:8761"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -56,6 +56,11 @@ services:
     image: avijitchatterjee/auth-server
     mem_limit: 1073741824
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-I", "http://auth-server:9090/auth/login"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     ports:
       - "9090:9090"
     environment:
@@ -90,6 +95,11 @@ services:
     image: avijitchatterjee/secure-ui
     mem_limit: 1073741824
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-I", "http://secure-ui:8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     ports:
       - "8080:8080"
     environment:
