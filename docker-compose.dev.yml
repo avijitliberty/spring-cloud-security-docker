@@ -21,11 +21,11 @@ services:
       - 9090:9090
 
   resource-server:
+    build: resource-server 
     ports:
       - 8081:8081
-    build: resource-server
     
   user-server:
+    build: user-server 
     ports:
       - 8082:8082
-    build: user-server
