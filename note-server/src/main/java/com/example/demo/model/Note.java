@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity  // This tells Hibernate to make a table out of this class
 @Table(name = "note")
-public class Note {
+public class Note extends Auditable<String> {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -36,6 +36,7 @@ public class Note {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	public int getId() {
 		return id;
 	}

@@ -1,0 +1,23 @@
+spring:
+  profiles: default
+  application:
+    name: note-server
+  cloud:
+    config:
+      uri: http://localhost:8888
+      fail-fast: true
+      password: ${CONFIG_SERVICE_PASSWORD}
+      username: user
+
+---
+
+spring:
+  profiles: docker
+  application:
+    name: note-server
+  cloud:
+     config:
+        uri: http://config-server:8888
+        fail-fast: true
+        password: ${CONFIG_SERVICE_PASSWORD}
+        username: user

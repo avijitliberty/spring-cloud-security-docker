@@ -4,6 +4,8 @@ import java.net.URI;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +21,12 @@ import com.example.demo.service.NoteService;
 @RestController
 public class NotesController {
 	
+	private final Logger log = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	private NoteService noteService;
 	
-	/* Create User */
+	/* Create Note */
 	//@PreAuthorize("#oauth2.hasScope('toll_report')")
 	@RequestMapping(method = RequestMethod.POST, 
 			        consumes = MediaType.APPLICATION_JSON_VALUE, 
