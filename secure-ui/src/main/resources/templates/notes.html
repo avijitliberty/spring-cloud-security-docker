@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<title>Spring Cloud Netflix Docker - Notes Page</title>
+</head>
+<body>
+	<div th:replace="home::LoggedInChild"></div>
+	<h1>Spring Cloud Netflix Docker - SecureUI</h1>
+
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<p>
+				This is the <b>user</b> zone
+			</p>
+			<p>
+				Only authenticated users with role <b>USER</b> are allowed to see
+				this page.
+			</p>
+
+			<table class="table table-striped">
+				<tr>
+					<th>Note ID</th>
+					<th>Topic</th>
+					<th>Subject</th>
+					<th>Body</th>
+					<th>Created By</th>
+					<th>Created Date</th>
+					<th>Updated By</th>
+					<th>Updated Date</th>
+				</tr>
+				<tr th:each="note : ${notes}">
+					<td th:text="${note.id}"></td>
+					<td th:text="${note.topic}"></td>
+					<td th:text="${note.subject}"></td>
+					<td th:text="${note.body}"></td>
+					<td th:text="${note.createdBy}"></td>
+					<td th:text="${note.createdDate}"></td>
+					<td th:text="${note.lastModifiedBy}"></td>
+					<td th:text="${note.lastModifiedDate}"></td>
+				</tr>
+			</table>
+
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+	<p>
+		Click <a th:href="@{/}">here</a> to go to home.
+	</p>
+</body>
+</html>

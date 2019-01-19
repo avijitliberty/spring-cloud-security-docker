@@ -21,7 +21,7 @@ public class ReportRestController {
 	protected final Log logger = LogFactory.getLog(getClass());
 
     @RequestMapping("/tolldata")
-	@PreAuthorize("#oauth2.hasScope('toll_read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
 	public ArrayList<TollUsage> getTollData() {
 		
 		TollUsage instance1 = new TollUsage("200", "station150", "B65GT1W", "2016-09-30T06:31:22");

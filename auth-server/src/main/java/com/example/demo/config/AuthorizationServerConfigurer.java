@@ -76,13 +76,13 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
                 // We only use the authorization_code grant type, with support for refresh tokens
                 .authorizedGrantTypes("authorization_code", "refresh_token")
                 // We can define our own scopes here
-                .scopes("toll_read","toll_report")
+                .scopes("read","write")
                 // If we do not auto approve, the user is asked upon login if (s)he approves 
           .and()
                 .withClient("securecli")
                 .secret("securecli-secret")
                 .authorizedGrantTypes("authorization_code", "refresh_token", "password", "client_credentials")
-                .scopes("toll_read", "toll_report")
+                .scopes("read", "write")
                 .autoApprove(true);
     }
 

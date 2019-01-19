@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +33,7 @@ public class NotesController {
 	private NoteService noteService;
 
 	/* Create Note */
-	// @PreAuthorize("#oauth2.hasScope('toll_report')")
+	// @PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, path = "/notes")
 	public ResponseEntity<?> createNote(@Valid @RequestBody Note note) throws Exception {
 		Note savedNote = noteService.create(note);
@@ -45,7 +46,7 @@ public class NotesController {
 	}
 
 	/* Read Notes */
-	// @PreAuthorize("#oauth2.hasScope('toll_report')")
+	@PreAuthorize("#oauth2.hasScope('read')")
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/notes")
 	public ResponseEntity<List<Note>> getNotes(@RequestParam(value = "createdBy", required = false) String createdBy) throws Exception {
 		
@@ -63,7 +64,7 @@ public class NotesController {
 	}
 	
 	/* Read Notes by Id */
-	//@PreAuthorize("#oauth2.hasScope('toll_read')")
+	//@PreAuthorize("#oauth2.hasScope('read')")
 	@RequestMapping(method = RequestMethod.GET, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/notes/{id}")
@@ -73,7 +74,7 @@ public class NotesController {
 	}
 	
 	/* Update */
-	//@PreAuthorize("#oauth2.hasScope('toll_report')")
+	//@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.PUT, 
 			        consumes = MediaType.APPLICATION_JSON_VALUE, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
@@ -84,7 +85,7 @@ public class NotesController {
 	}
 
 	/* Delete */
-	//@PreAuthorize("#oauth2.hasScope('toll_report')")
+	//@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.DELETE, 
 			        path = "/notes/{id}")
 	public ResponseEntity<String> deleteNote(@PathVariable Integer id) throws Exception {

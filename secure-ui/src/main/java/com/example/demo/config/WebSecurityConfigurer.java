@@ -103,7 +103,8 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	private OAuth2ProtectedResourceDetails resource() {
 	  
 	  AuthorizationCodeResourceDetails resource = new
-	  AuthorizationCodeResourceDetails(); resource.setClientId(clientId);
+	  AuthorizationCodeResourceDetails(); 
+	  resource.setClientId(clientId);
 	  resource.setClientSecret(clientSecret);
 	  resource.setAccessTokenUri(accessTokenUri);
 	  resource.setUserAuthorizationUri(authorizeUrl); 	  

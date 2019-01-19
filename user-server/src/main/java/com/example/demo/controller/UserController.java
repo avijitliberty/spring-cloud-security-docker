@@ -28,7 +28,7 @@ public class UserController {
 	private UserService userService;
 	
 	/* Create User */
-	//@PreAuthorize("#oauth2.hasScope('toll_report')")
+	//@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.POST, 
 			        consumes = MediaType.APPLICATION_JSON_VALUE, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
@@ -41,7 +41,7 @@ public class UserController {
 	@RequestMapping(method = RequestMethod.GET, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/users")
-	@PreAuthorize("#oauth2.hasScope('toll_report')")
+	@PreAuthorize("#oauth2.hasScope('read')")
 	public List<User> getUser(@RequestParam(value = "name", required = false) String name) throws Exception {
 		if (name != null && !name.trim().isEmpty()) {
 			return userService.findUsers(name, null);
@@ -51,7 +51,7 @@ public class UserController {
 	}
 	
 	/* Read Users by Id */
-	//@PreAuthorize("#oauth2.hasScope('toll_read')")
+	//@PreAuthorize("#oauth2.hasScope('read')")
 	@RequestMapping(method = RequestMethod.GET, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/users/{id}")
@@ -60,7 +60,7 @@ public class UserController {
 	}
 	
 	/* Update */
-	//@PreAuthorize("#oauth2.hasScope('toll_report')")
+	//@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.PUT, 
 			        consumes = MediaType.APPLICATION_JSON_VALUE, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
@@ -70,7 +70,7 @@ public class UserController {
 	}
 
 	/* Delete */
-	//@PreAuthorize("#oauth2.hasScope('toll_report')")
+	//@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.DELETE, 
 			        path = "/users/{id}")
 	public String deleteUser(@PathVariable Integer id) throws Exception {

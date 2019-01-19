@@ -38,6 +38,9 @@ report:
   
 users:
   url: http://localhost:8082/services/users
+  
+notes:
+  url: http://localhost:8084/services/notes
 
 eureka:
   client:

@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.example.demo.model.Note;
 import com.example.demo.model.TollUsage;
 import com.example.demo.model.User;
 
@@ -35,6 +36,9 @@ public class MyWebsiteController {
 	
 	@Value("${users.url}")
 	private String usersUrl;
+	
+	@Value("${notes.url}")
+	private String notesUrl;
 
 	@Autowired
 	private OAuth2ClientContext clientContext;
@@ -98,6 +102,22 @@ public class MyWebsiteController {
 		model.addAttribute("users", users.getBody());
 
 		return "users";
+	}
+	
+	@RequestMapping("/notes")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
+	public String loadNotes(Model model) {
+
+		OAuth2AccessToken t = clientContext.getAccessToken();
+		System.out.println("Token: " + t.getValue());
+
+		ResponseEntity<ArrayList<Note>> notes = oauth2RestTemplate.exchange(notesUrl, HttpMethod.GET, null,
+				new ParameterizedTypeReference<ArrayList<Note>>() {
+				});
+
+		model.addAttribute("notes", notes.getBody());
+
+		return "notes";
 	}
 	
 	/** Forbidden page. */
