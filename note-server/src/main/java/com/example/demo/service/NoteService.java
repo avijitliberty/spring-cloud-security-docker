@@ -21,6 +21,6 @@ public interface NoteService {
 
 	String delete(Integer noteId) throws Exception;
 
-	List<Note> findNotes(String createdBy) throws Exception;
+	List<Note> findNotes(String createdBy, Integer id) throws Exception;
 
 }

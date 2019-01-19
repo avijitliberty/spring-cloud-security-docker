@@ -5,13 +5,13 @@ spring:
     username: note-user
     password: note-password
     platform: mysql
-    #initialize: true
-    #schema: classpath:/scripts/schema.sql
-    #data: classpath:/scripts/data.sql
+    initialize: true
+    schema: classpath:/scripts/schema.sql
+    data: classpath:/scripts/data.sql
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
 
 # Make the application available at http://localhost:8082
