@@ -150,7 +150,6 @@ public class UserDetailsServiceImpl implements UserService {
 				
 				existing.setRoles(rolesAdded);
 								
-				userRepository.save(existing);
 				log.info("user updated: {}", existing.toString());
 				return userRepository.save(existing);
 			}

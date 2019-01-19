@@ -1,9 +1,9 @@
 spring:
   profiles: default
   datasource:
-    url: jdbc:mysql://localhost:3306/oauth2-db?useSSL=false
-    username: oauth2-user
-    password: oauth2-password
+    url: jdbc:mysql://localhost:3306/note-db?useSSL=false
+    username: note-user
+    password: note-password
     platform: mysql
     initialize: true
     schema: classpath:/scripts/schema.sql
@@ -16,7 +16,7 @@ spring:
 
 # Make the application available at http://localhost:8082
 server:
-  port: 8082
+  port: 8084
   contextPath: /services
 
 # Configure the User Info Resource Server details
@@ -41,9 +41,9 @@ eureka:
 spring:
   profiles: docker
   datasource:
-    url: jdbc:mysql://oauth2:3306/oauth2-db?useSSL=false
-    username: oauth2-user
-    password: oauth2-password
+    url: jdbc:mysql://oauth2:3306/note-db?useSSL=false
+    username: note-user
+    password: note-password
     platform: mysql
     initialize: true
     schema: classpath:/scripts/schema.sql
@@ -56,7 +56,7 @@ spring:
     
 # Make the application available at http://localhost:8081/services
 server:
-  port: 8082
+  port: 8084
   contextPath: /services
 
 # Configure the User Info Resource Server details
