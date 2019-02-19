@@ -6,9 +6,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class NoteServiceApplication {
+public class NoteServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NoteServiceApplication.class, args);
+		SpringApplication.run(NoteServerApplication.class, args);
 	}
 }

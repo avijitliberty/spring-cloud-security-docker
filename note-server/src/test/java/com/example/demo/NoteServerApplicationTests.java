@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class NoteServiceApplicationTests {
+public class NoteServerApplicationTests {
 
 	@Autowired
 	private MockMvc mockMvc;
