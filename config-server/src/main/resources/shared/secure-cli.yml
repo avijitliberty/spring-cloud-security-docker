@@ -1,0 +1,64 @@
+spring:
+  profiles: default
+  application:
+    name: secure-cli
+
+server:
+  port: 8083
+
+security:
+  oauth2:
+    client:
+      accessTokenUri: http://localhost:9090/auth/oauth/token
+      userAuthorizationUri: http://localhost:9090/auth/oauth/authorize
+      clientId: securecli
+      clientSecret: securecli-secret
+      scope: read
+      client-authentication-scheme: header
+    resource:
+      userInfoUri: http://localhost:9090/auth/user
+  basic:
+    enabled: false
+    
+logging:
+  level:
+    org.springframework.security: info
+    
+report:
+  url: http://localhost:8081/services/tolldata
+  
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    
+---
+
+spring:
+  profiles: docker
+  application:
+    name: secure-cli
+    
+server:
+  port: 8082
+
+security:
+  oauth2:
+    client:
+      accessTokenUri: http://auth-server:9090/auth/oauth/token
+      userAuthorizationUri: http://${DOMAIN_NAME:auth-server}:9090/auth/oauth/authorize
+      clientId: securecli
+      clientSecret: securecli-secret
+      scope: read
+      client-authentication-scheme: header
+    resource:
+      userInfoUri: http://auth-server:9090/auth/user
+  basic:
+    enabled: false
+    
+logging:
+  level:
+    org.springframework.security: info
+    
+report:
+  url: http://resource-server:8081/services/tolldata
