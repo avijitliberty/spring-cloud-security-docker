@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
     <head>
         <title>Spring Cloud Netflix Docker - 403 page</title>
-        <meta charset="utf-8" />
     </head>
     <body>
-        <div th:replace="home::LoggedInChild"></div>
-        <h1>Spring Cloud Netflix Docker - SecureUI</h1>
+        <div layout:fragment="content" th:remove="tag">
+        <h1>Spring Cloud Netflix Docker - 403 page</h1>
         <h2>FORBIDDEN! You must approve at least read scope.</h2>
         <p>Click <a th:href="@{/}">here</a> to go to home.</p>
+        </div>
     </body>
 </html>

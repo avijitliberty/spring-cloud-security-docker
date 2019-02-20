@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Spring Cloud Netflix Docker - AuthorizationServer</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+    <p>Do you authorize '<span th:text="${authorizationRequest.clientId}"></span>' to access your protected resources?</p>
+    <form id="confirmationForm" name="confirmationForm" th:action="@{/oauth/authorize}" method="post">
+        <input name="user_oauth_approval" value="true" type="hidden" />
+        <div th:each="scope: ${scopes}">
+            <span th:text="${scope.key}">Some Scope</span>
+            <span>
+                <label>
+                    <input type="radio" th:name="${scope.key}" value="true" th:checked="${scope.value}"/>Approve
+                </label>
+                <label>
+                    <input type="radio" th:name="${scope.key}" value="false" th:checked="${!scope.value}"/>Reject
+                </label>
+            </span>
+        </div>
+        <button class="btn btn-primary" type="submit">Authorize</button>
+    </form>
+    <p></p>
+    </div>
+</body>
+</html>

@@ -56,7 +56,13 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.
         authorizeRequests()
-                .antMatchers("/", "/login**","/403").permitAll()   // Allow navigating to index page,
+                .antMatchers(
+                  "/",
+                  "/js/**",
+                  "/css/**",
+                  "/img/**",
+                  "/webjars/**").permitAll()
+                .antMatchers("/", "/login**","/403", "/signup").permitAll()   // Allow navigating to index page,
                 .anyRequest().authenticated()                      // but secure all the other URLs
           .and()
                 .addFilterAfter(oauth2ClientFilter,
@@ -66,9 +72,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     			.logout()
     			.logoutSuccessUrl(logoutUrl)
     			.invalidateHttpSession(true)
-    	  /*.and()
-    			.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)*/
-    	  .and().csrf().disable();
+           	    .and().csrf().disable();
     }
 
    /* @Bean

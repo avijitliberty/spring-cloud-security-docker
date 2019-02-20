@@ -41,7 +41,7 @@ public class UserController {
 	@RequestMapping(method = RequestMethod.GET, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/users")
-	@PreAuthorize("#oauth2.hasScope('read')")
+	//@PreAuthorize("#oauth2.hasScope('read')")
 	public List<User> getUser(@RequestParam(value = "name", required = false) String name) throws Exception {
 		if (name != null && !name.trim().isEmpty()) {
 			return userService.findUsers(name, null);

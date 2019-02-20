@@ -1,21 +1,61 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
 <head>
-<title>Spring Cloud Netflix Docker - AuthorizationServer</title>
+    <title>Login</title>
 </head>
 <body>
-	<h1>Login page</h1>
-	<p>Example administrator: jim / demo</p>
-	<p>Example user: bob / demo</p>
-	<p>Example user and administrator: ted / demo</p>
-	<p th:if="${param.error != null}" class="error" style="color: red"
-		th:text="${session[SPRING_SECURITY_LAST_EXCEPTION]}">error</p>
+<div layout:fragment="content" th:remove="tag">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h1>Login page</h1>
+            <p>Example administrator: jim / demo</p>
+	   		<p>Example user: bob / demo</p>
+			<p>Example user and administrator: ted / demo</p>
+            <form th:action="@{/login}" method="post">
+                <div th:if="${param.error}">
+                    <div class="alert alert-danger">
+                        Invalid username or password.
+                    </div>
+                </div>
+                <div th:if="${param.logout}">
+                    <div class="alert alert-info">
+                        You have been logged out.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>:
+                    <input type="text"
+                           id="username"
+                           name="username"
+                           class="form-control"
+                           autofocus="autofocus"
+                           placeholder="Username"></input>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>:
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           class="form-control"
+                           placeholder="Password"></input>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3">
+                            <input type="submit"
+                                   name="login-submit"
+                                   id="login-submit"
+                                   class="form-control btn btn-info"
+                                   value="Log In"></input>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
-	<form th:action="@{/login}" method="post">
-		<label for="username">Username</label>: <input type="text"
-			id="username" name="username" autofocus="autofocus" /> <br /> <label
-			for="password">Password</label>: <input type="password" id="password"
-			name="password" /> <br /> <input type="submit" value="Log in" />
-	</form>
+</div>
 </body>
 </html>
