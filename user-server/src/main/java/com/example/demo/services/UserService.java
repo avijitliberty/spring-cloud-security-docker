@@ -3,10 +3,11 @@ package com.example.demo.services;
 import java.util.List;
 
 import com.example.demo.model.User;
+import com.example.demo.model.UserRegistrationDto;
 
 public interface UserService {
 
-	User create(User user) throws Exception;
+	User create(UserRegistrationDto user) throws Exception;
 
 	User update(User user) throws Exception;
 

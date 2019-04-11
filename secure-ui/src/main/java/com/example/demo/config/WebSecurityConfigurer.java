@@ -58,11 +58,14 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
         authorizeRequests()
                 .antMatchers(
                   "/",
+                  "/login**",
+                  "/403",
+                  "/signup",
+                  "/registration",
                   "/js/**",
                   "/css/**",
                   "/img/**",
-                  "/webjars/**").permitAll()
-                .antMatchers("/", "/login**","/403", "/signup").permitAll()   // Allow navigating to index page,
+                  "/webjars/**").permitAll()                       // Allow navigating to index page,
                 .anyRequest().authenticated()                      // but secure all the other URLs
           .and()
                 .addFilterAfter(oauth2ClientFilter,

@@ -40,13 +40,16 @@ public class User implements UserDetails {
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "name")
+    @Column(name = "first_name")
     @NotEmpty
-    private String name;
+    private String firstName;
     @Column(name = "last_name")
     private String lastName;
     @Column(name = "active")
     private int active;
+    @Column(name = "user_name")
+    @NotEmpty
+    private String username;
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", 
                joinColumns = @JoinColumn(name = "user_id"),
@@ -58,21 +61,22 @@ public class User implements UserDetails {
 		super();
 	}
     
- 	public User(int id, String email, String password, String name, String lastName, int active, Set<Role> roles) {
+ 	public User(int id, String email, String password, String firstName, String lastName, int active, String userName, Set<Role> roles) {
 		super();
 		this.id = id;
 		this.email = email;
 		this.password = password;
-		this.name = name;
+		this.firstName = firstName;
 		this.lastName = lastName;
 		this.active = active;
+		this.username = userName;
 		this.roles = roles;
 	}
  	
  	@Override
     public String toString() {
         String result = String.format(
-                "User [id=%d, name='%s']%n",id, name);
+                "User [id=%d, userName='%s']%n",id, username);
         if (roles != null) {
             for(Role role : roles) {
                 result += String.format(
@@ -102,12 +106,12 @@ public class User implements UserDetails {
 		this.email = email;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	public String getLastName() {
@@ -124,6 +128,11 @@ public class User implements UserDetails {
 
 	public void setActive(int active) {
 		this.active = active;
+	}
+
+	
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public Set<Role> getRoles() {
@@ -160,7 +169,7 @@ public class User implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return this.name;
+		return this.username;
 	}
 
 	@Override

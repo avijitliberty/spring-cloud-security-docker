@@ -6,8 +6,9 @@ CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `active` int(11) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) DEFAULT NULL,
-  `name` varchar(255) NOT NULL,
+  `user_name` varchar(255) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;

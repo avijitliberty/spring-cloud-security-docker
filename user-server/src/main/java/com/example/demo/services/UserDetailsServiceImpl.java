@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import com.example.demo.exception.ApiRuntimeException;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
+import com.example.demo.model.UserRegistrationDto;
 import com.example.demo.repositories.RoleRepository;
 import com.example.demo.repositories.UserRepository;
 
@@ -40,7 +41,7 @@ public class UserDetailsServiceImpl implements UserService {
 		try {
 
 			if (name != null && !name.trim().isEmpty()) {
-				User userByName = userRepository.findByName(name);
+				User userByName = userRepository.findByusername(name);
 				if (userByName == null) {
 					throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "user does not exist");
 				} else {
@@ -71,19 +72,26 @@ public class UserDetailsServiceImpl implements UserService {
 	}
 
 	@Override
-	public User create(User user) throws Exception {
+	public User create(UserRegistrationDto user) throws Exception {
 
 		try {
 
-			User existing = userRepository.findByName(user.getUsername());
+			User existing = userRepository.findByusername(user.getUserName());
 
 			if (existing != null) {
-				log.info("user already exists: " + user.getUsername());
+				log.info("user already exists: " + user.getUserName());
 				throw new ApiRuntimeException(HttpStatus.CONFLICT, "User already exists with same name.");
 			} else {
 
+				User newUser = new User();
+				newUser.setFirstName(user.getFirstName());
+				newUser.setLastName(user.getLastName());
+				newUser.setActive(1);
+				newUser.setEmail(user.getEmail());
+				newUser.setUsername(user.getUserName());
+							
 				String hash = encoder.encode(user.getPassword());
-				user.setPassword(hash);
+				newUser.setPassword(hash);
 				
 				Set<Role> rolesToAdd = user.getRoles();
 				Set<Role> rolesAdded = new HashSet<Role>();
@@ -98,10 +106,10 @@ public class UserDetailsServiceImpl implements UserService {
 					}
 				}
 				
-				user.setRoles(rolesAdded);
+				newUser.setRoles(rolesAdded);
 				
-				log.info("new user has been created: {}", user.toString());
-				return userRepository.save(user);
+				log.info("new user has been created: {}", newUser.toString());
+				return userRepository.save(newUser);
 			}
 
 		} catch (HttpClientErrorException ex) {
@@ -118,7 +126,7 @@ public class UserDetailsServiceImpl implements UserService {
 	public User update(User user) throws Exception {
 		try {
 
-			User existing = userRepository.findByName(user.getUsername());
+			User existing = userRepository.findByusername(user.getUsername());
 
 			if (existing == null) {
 				log.info("user does not exist: " + user.getUsername());
@@ -129,9 +137,10 @@ public class UserDetailsServiceImpl implements UserService {
 				String hash = encoder.encode(user.getPassword());
 				existing.setPassword(hash);
 				
-				existing.setName(user.getName());
+				existing.setFirstName(user.getFirstName());
 				existing.setLastName(user.getLastName());
 				existing.setEmail(user.getEmail());
+				existing.setUsername(user.getUsername());
 				existing.setActive(user.getActive());
 				
 				

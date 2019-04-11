@@ -4,33 +4,52 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
-import org.springframework.security.oauth2.common.AuthenticationScheme;
+import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsAccessTokenProvider;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.example.demo.model.Note;
+import com.example.demo.model.Role;
 import com.example.demo.model.TollUsage;
 import com.example.demo.model.User;
+import com.example.demo.model.UserRegistrationDto;
 
 /**
  * Web MVC Controller serving two pages:
@@ -40,6 +59,15 @@ import com.example.demo.model.User;
  */
 @Controller
 public class MyWebsiteController {
+	
+	@Value("${security.oauth2.client.accessTokenUri}")
+	private String accessTokenUri;
+	@Value("${security.oauth2.client.userAuthorizationUri}")
+	private String authorizeUrl;
+	@Value("${security.oauth2.client.clientId}")
+	private String clientId;
+	@Value("${security.oauth2.client.clientSecret}")
+	private String clientSecret;
 
 	@Value("${report.url}")
 	private String reportUrl;
@@ -49,6 +77,14 @@ public class MyWebsiteController {
 	
 	@Value("${notes.url}")
 	private String notesUrl;
+	
+	@Value("${auth.url}")
+	private String authUrl;
+	
+	@ModelAttribute("user")
+    public UserRegistrationDto userRegistrationDto() {
+        return new UserRegistrationDto();
+    }
 	
 	@Autowired
 	private OAuth2ClientContext clientContext;
@@ -131,19 +167,65 @@ public class MyWebsiteController {
 		return "users";
 	}
 	
-	@GetMapping("/signup")
+	@RequestMapping("/signup")
 	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String showSignUpForm(User user) {
-        return "add-user";
+    public String showSignUpForm(Model model) {
+        return "registration";
     }
 	
-	@RequestMapping("/adduser")
+	@RequestMapping("/registration")
 	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String addUser(@Valid User user, BindingResult result, Model model) {
+    public String addUser(@ModelAttribute("user") @Valid UserRegistrationDto userDto, 
+            BindingResult result, HttpServletRequest request, Model model) {
         if (result.hasErrors()) {
-            return "add-user";
+            return "registration";
         }
-        return "home";
+        
+        Set<Role> rolesToAdd = new HashSet<Role>();
+        Role role = new Role();
+        role.setRole("USER");
+        rolesToAdd.add(role);
+        userDto.setRoles(rolesToAdd);
+        
+        ClientCredentialsResourceDetails resource = new ClientCredentialsResourceDetails();
+		resource.setClientId(clientId);
+		resource.setClientSecret(clientSecret);
+	    resource.setAccessTokenUri(accessTokenUri);
+	    resource.setScope(Arrays.asList("read","write"));
+	   		
+        OAuth2RestTemplate template = new OAuth2RestTemplate(resource, new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
+        
+        ClientCredentialsAccessTokenProvider accessTokenProvider = new ClientCredentialsAccessTokenProvider();
+		accessTokenProvider.setRequestFactory(new SimpleClientHttpRequestFactory());
+        
+        
+        template.setAccessTokenProvider(accessTokenProvider);
+        //request entity is created with request body and headers
+        HttpEntity<UserRegistrationDto> requestEntity = new HttpEntity<>(userDto);
+
+    	ResponseEntity<User> responseEntity = template.exchange(usersUrl, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<User>() {
+				});
+    	if(responseEntity.getStatusCode() == HttpStatus.OK){
+            User createdUser = responseEntity.getBody();
+            System.out.println("user response retrieved " + responseEntity.getBody());
+            //return "redirect:/registration?success";
+            
+            /*ResponseEntity<UsernamePasswordAuthenticationToken> tokenEntity = template.exchange(authUrl, HttpMethod.POST, requestEntity,
+    				new ParameterizedTypeReference<UsernamePasswordAuthenticationToken>() {
+    				});
+            
+              //if(tokenEntity.getStatusCode() == HttpStatus.OK){
+                UsernamePasswordAuthenticationToken auth = tokenEntity.getBody();
+            	HttpSession session = request.getSession(true);
+                SecurityContext sc = SecurityContextHolder.getContext();
+                sc.setAuthentication(auth);
+                session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,sc);
+                session.setAttribute("principal.name", auth.getName());
+   			    session.setAttribute("authorities", auth.getAuthorities());
+            //}		
+*/        }
+    	return "redirect:/registration?success";
     }
 	
 	@RequestMapping("/notes")

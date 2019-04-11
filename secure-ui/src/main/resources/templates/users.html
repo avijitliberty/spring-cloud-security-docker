@@ -23,7 +23,9 @@
 			<table class="table table-striped">
 				<tr>
 					<th>User ID</th>
-					<th>Name</th>
+					<th>FirstName</th>
+					<th>LastName</th>
+					<th>UserName</th>
 					<th>Email</th>
 					<th>Roles</th>
 					<th>Enabled</th>
@@ -32,7 +34,9 @@
 				</tr>
 				<tr th:each="user : ${users}">
 					<td th:text="${user.id}"></td>
-					<td th:text="${user.name}"></td>
+					<td th:text="${user.firstName}"></td>
+					<td th:text="${user.lastName}"></td>
+					<td th:text="${user.username}"></td>
 					<td th:text="${user.email}"></td>
 					<td th:text="${user.roles}"></td>
 					<td th:text="${user.enabled}"></td>

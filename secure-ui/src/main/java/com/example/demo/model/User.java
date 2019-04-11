@@ -1,65 +1,106 @@
 package com.example.demo.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class User  {
 
 	private static final long serialVersionUID = 1L;
+
+	private int id;
+
+	private String email;
+
+	private String password;
+
+	private String firstName;
+
+	private String lastName;
+
+	private String username;
+
+	private int active;
+
+	private Set<Role> roles;
 	
-    private int id;
-    
-    private String email;
-    
-    private String password;
-    
-    private String name;
-    
-    private String lastName;
-    
-    private int active;
-    
-    private Set<Role> roles;
-    
-    private Boolean enabled;
-    
-    private Boolean accountNonLocked;
-    
-    private Boolean accountNonExpired;
-    
-    private Boolean credentialsNonExpired;
-    
-    private String username;
-    
-    public User() {
+	private Boolean enabled;
+	
+	private Boolean accountNonLocked;
+	
+	private Boolean accountNonExpired;
+	
+	private Boolean credentialsNonExpired;
+
+	public User() {
 		super();
 	}
-    
- 	public User(String email, String password, String name, String lastName, int active, Set<Role> roles) {
+
+	public User(String email, String password, String firstName, String lastName, String userName, int active,
+			Set<Role> roles) {
 		super();
-	
+
 		this.email = email;
 		this.password = password;
-		this.name = name;
+		this.firstName = firstName;
 		this.lastName = lastName;
+		this.username = userName;
 		this.active = active;
 		this.roles = roles;
 	}
- 	
- 	@Override
-    public String toString() {
-        String result = String.format(
-                "User [id=%d, name='%s']%n",id, name);
-        if (roles != null) {
-            for(Role role : roles) {
-                result += String.format(
-                        "Role[id=%d, name='%s']%n",
-                        role.getRoleId(), role.getRole());
-            }
-        }
 
-        return result;
-    }
- 	
+	public String getUserName() {
+		return username;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Boolean getAccountNonLocked() {
+		return accountNonLocked;
+	}
+
+	public void setAccountNonLocked(Boolean accountNonLocked) {
+		this.accountNonLocked = accountNonLocked;
+	}
+
+	public Boolean getAccountNonExpired() {
+		return accountNonExpired;
+	}
+
+	public void setAccountNonExpired(Boolean accountNonExpired) {
+		this.accountNonExpired = accountNonExpired;
+	}
+
+	public Boolean getCredentialsNonExpired() {
+		return credentialsNonExpired;
+	}
+
+	public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
+		this.credentialsNonExpired = credentialsNonExpired;
+	}
+
+	@Override
+	public String toString() {
+		String result = String.format("User [id=%d, username='%s']%n", id, username);
+		if (roles != null) {
+			for (Role role : roles) {
+				result += String.format("Role[id=%d, name='%s']%n", role.getRoleId(), role.getRole());
+			}
+		}
+
+		return result;
+	}
 
 	public int getId() {
 		return id;
@@ -77,12 +118,12 @@ public class User  {
 		this.email = email;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	public String getLastName() {
@@ -122,42 +163,12 @@ public class User  {
 	}
 
 	public String getUsername() {
-		return this.username;
+		return username;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-	public Boolean getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public Boolean getAccountNonLocked() {
-		return accountNonLocked;
-	}
-
-	public void setAccountNonLocked(Boolean accountNonLocked) {
-		this.accountNonLocked = accountNonLocked;
-	}
-
-	public Boolean getAccountNonExpired() {
-		return accountNonExpired;
-	}
-
-	public void setAccountNonExpired(Boolean accountNonExpired) {
-		this.accountNonExpired = accountNonExpired;
-	}
-
-	public Boolean getCredentialsNonExpired() {
-		return credentialsNonExpired;
-	}
-
-	public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
-		this.credentialsNonExpired = credentialsNonExpired;
-	}
+	
+	
 }

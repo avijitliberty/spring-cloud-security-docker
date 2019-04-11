@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.User;
+import com.example.demo.model.UserRegistrationDto;
 import com.example.demo.services.UserService;
 
 @RestController
@@ -33,7 +33,7 @@ public class UserController {
 			        consumes = MediaType.APPLICATION_JSON_VALUE, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/users")
-	public User createUser(@Valid @RequestBody User user) throws Exception {
+	public User createUser(@Valid @RequestBody UserRegistrationDto user) throws Exception {
 		return userService.create(user);
 	}
 	

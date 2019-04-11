@@ -90,7 +90,7 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
 				.redirectUris(redirectUri)
 				// We only use the authorization_code grant type, with support for refresh
 				// tokens
-				.authorizedGrantTypes("authorization_code", "refresh_token", "password")
+				.authorizedGrantTypes("authorization_code", "refresh_token","password", "client_credentials")
 				// We can define our own scopes here
 				.scopes("read", "write")
 				// If we do not auto approve, the user is asked upon login if (s)he approves
