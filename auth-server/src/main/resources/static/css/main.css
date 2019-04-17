@@ -13,3 +13,19 @@ footer {
 footer p {
     padding: 15px;
 }
+
+.navbar-brand {
+  text-align:center;
+  margin:0 !important;
+  padding:0 !important; /*uncomment to fit*/  
+}
+#logo
+{
+float: left;
+width:45px;
+height:100%;
+}
+
+.nav {
+float:left;
+}
