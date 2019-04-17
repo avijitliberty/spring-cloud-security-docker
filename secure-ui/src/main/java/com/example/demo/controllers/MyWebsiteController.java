@@ -3,16 +3,14 @@ package com.example.demo.controllers;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -20,27 +18,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
-import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsAccessTokenProvider;
-import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,15 +46,6 @@ import com.example.demo.model.UserRegistrationDto;
 @Controller
 public class MyWebsiteController {
 	
-	@Value("${security.oauth2.client.accessTokenUri}")
-	private String accessTokenUri;
-	@Value("${security.oauth2.client.userAuthorizationUri}")
-	private String authorizeUrl;
-	@Value("${security.oauth2.client.clientId}")
-	private String clientId;
-	@Value("${security.oauth2.client.clientSecret}")
-	private String clientSecret;
-
 	@Value("${report.url}")
 	private String reportUrl;
 	
@@ -90,7 +67,12 @@ public class MyWebsiteController {
 	private OAuth2ClientContext clientContext;
 
 	@Autowired
-	private OAuth2RestTemplate oauth2RestTemplate;
+	@Qualifier("authorizationCodeRestTemplate")
+	private OAuth2RestOperations authorizationCodeRestTemplate;
+	
+	@Autowired
+	@Qualifier("clientCredentialsRestTemplate")
+	private OAuth2RestOperations clientCredentialsRestTemplate;
 
 	/**
 	 * Default index page to verify that our application works.
@@ -125,7 +107,7 @@ public class MyWebsiteController {
 		OAuth2AccessToken t = clientContext.getAccessToken();
 		System.out.println("Token: " + t.getValue());
 
-		ResponseEntity<ArrayList<TollUsage>> tolls = oauth2RestTemplate.exchange(reportUrl, HttpMethod.GET, null,
+		ResponseEntity<ArrayList<TollUsage>> tolls = authorizationCodeRestTemplate.exchange(reportUrl, HttpMethod.GET, null,
 				new ParameterizedTypeReference<ArrayList<TollUsage>>() {
 				});
 
@@ -144,7 +126,7 @@ public class MyWebsiteController {
 		System.out.println("Token: " + t.getValue());
 		String url = usersUrl + "/" + id;
 
-		ResponseEntity<User> user = oauth2RestTemplate.exchange(url, HttpMethod.GET, null,
+		ResponseEntity<User> user = authorizationCodeRestTemplate.exchange(url, HttpMethod.GET, null,
 				new ParameterizedTypeReference<User>() {
 				});
 		model.addAttribute("user", user.getBody());
@@ -158,7 +140,7 @@ public class MyWebsiteController {
 		OAuth2AccessToken t = clientContext.getAccessToken();
 		System.out.println("Token: " + t.getValue());
 
-		ResponseEntity<ArrayList<User>> users = oauth2RestTemplate.exchange(usersUrl, HttpMethod.GET, null,
+		ResponseEntity<ArrayList<User>> users = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.GET, null,
 				new ParameterizedTypeReference<ArrayList<User>>() {
 				});
 
@@ -182,28 +164,14 @@ public class MyWebsiteController {
         }
         
         Set<Role> rolesToAdd = new HashSet<Role>();
-        Role role = new Role();
-        role.setRole("USER");
+        Role role = new Role("USER");
         rolesToAdd.add(role);
         userDto.setRoles(rolesToAdd);
         
-        ClientCredentialsResourceDetails resource = new ClientCredentialsResourceDetails();
-		resource.setClientId(clientId);
-		resource.setClientSecret(clientSecret);
-	    resource.setAccessTokenUri(accessTokenUri);
-	    resource.setScope(Arrays.asList("read","write"));
-	   		
-        OAuth2RestTemplate template = new OAuth2RestTemplate(resource, new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
-        
-        ClientCredentialsAccessTokenProvider accessTokenProvider = new ClientCredentialsAccessTokenProvider();
-		accessTokenProvider.setRequestFactory(new SimpleClientHttpRequestFactory());
-        
-        
-        template.setAccessTokenProvider(accessTokenProvider);
         //request entity is created with request body and headers
         HttpEntity<UserRegistrationDto> requestEntity = new HttpEntity<>(userDto);
 
-    	ResponseEntity<User> responseEntity = template.exchange(usersUrl, HttpMethod.POST, requestEntity,
+    	ResponseEntity<User> responseEntity = clientCredentialsRestTemplate.exchange(usersUrl, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<User>() {
 				});
     	if(responseEntity.getStatusCode() == HttpStatus.OK){
@@ -235,7 +203,7 @@ public class MyWebsiteController {
 		OAuth2AccessToken t = clientContext.getAccessToken();
 		System.out.println("Token: " + t.getValue());
 
-		ResponseEntity<ArrayList<Note>> notes = oauth2RestTemplate.exchange(notesUrl, HttpMethod.GET, null,
+		ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl, HttpMethod.GET, null,
 				new ParameterizedTypeReference<ArrayList<Note>>() {
 				});
 
