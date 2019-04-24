@@ -52,6 +52,9 @@ public class MyWebsiteController {
 	@Value("${users.url}")
 	private String usersUrl;
 	
+	@Value("${roles.url}")
+	private String rolesUrl;
+	
 	@Value("${notes.url}")
 	private String notesUrl;
 	
@@ -122,19 +125,22 @@ public class MyWebsiteController {
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String getUserById(Model model, @PathVariable Integer id) {
 		
-		OAuth2AccessToken t = clientContext.getAccessToken();
-		System.out.println("Token: " + t.getValue());
-		String url = usersUrl + "/" + id;
-
-		ResponseEntity<User> user = authorizationCodeRestTemplate.exchange(url, HttpMethod.GET, null,
+		ResponseEntity<User> userResponse = authorizationCodeRestTemplate.exchange(usersUrl + "/" + id, HttpMethod.GET, null,
 				new ParameterizedTypeReference<User>() {
 				});
-		model.addAttribute("user", user.getBody());
-		return "user-details";
+		
+		ResponseEntity<ArrayList<Role>> roleResponse = authorizationCodeRestTemplate.exchange(rolesUrl, HttpMethod.GET, null,
+				new ParameterizedTypeReference<ArrayList<Role>>() {
+				});
+
+		model.addAttribute("user", userResponse.getBody());
+		model.addAttribute("allRoles" , roleResponse.getBody());
+		
+		return "edit-user";
 	}
 	
 	@RequestMapping("/users")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String loadUsers(Model model) {
 
 		OAuth2AccessToken t = clientContext.getAccessToken();

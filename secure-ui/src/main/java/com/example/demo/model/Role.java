@@ -22,12 +22,18 @@ public class Role {
     public Role() {
     }
     
-    public Role(String role) {
+    public Role(int roleId, String role, Set<User> users) {
 		super();
+		this.roleId = roleId;
+		this.role = role;
+		this.users = users;
+	}
+
+	public Role(String role) {
 		this.role = role;
 	}
-    
-    @Override
+
+	@Override
 	public String toString() {
 		return "Role [role=" + role + "]";
 	}

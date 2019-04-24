@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.model.UserRegistrationDto;
+import com.example.demo.services.RoleService;
 import com.example.demo.services.UserService;
 
 @RestController
@@ -26,6 +28,9 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private RoleService roleService;
 	
 	/* Create User */
 	//@PreAuthorize("#oauth2.hasScope('write')")
@@ -48,6 +53,15 @@ public class UserController {
 		} else {
 			return userService.findUsers(null, null);
 		}
+	}
+	
+	/* Read Roles */
+	@RequestMapping(method = RequestMethod.GET, 
+			        produces = MediaType.APPLICATION_JSON_VALUE, 
+			        path = "/roles")
+	//@PreAuthorize("#oauth2.hasScope('read')")
+	public List<Role> getRoles() throws Exception {
+		return roleService.findRoles();
 	}
 	
 	/* Read Users by Id */

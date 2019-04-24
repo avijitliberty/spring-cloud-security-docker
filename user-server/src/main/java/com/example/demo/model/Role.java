@@ -32,12 +32,14 @@ public class Role {
     public Role() {
     }
     
-    public Role(String role) {
+    public Role(int roleId, String role, Set<User> users) {
 		super();
+		this.roleId = roleId;
 		this.role = role;
+		this.users = users;
 	}
 
-    public Set<User> getUsers() {
+	public Set<User> getUsers() {
 		return users;
 	}
 

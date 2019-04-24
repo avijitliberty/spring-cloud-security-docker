@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<title>Edit User</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3">
+
+					<h1>Edit User</h1>
+					<form th:action="@{/edit-user}" th:object="${user}" method="post">
+
+						<p class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}"
+							th:each="error : ${#fields.errors('global')}" th:text="${error}">Validation
+							error</p>
+
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('firstName')}? 'has-error':''">
+							<label for="firstName" class="control-label">First name</label> <input
+								id="firstName" class="form-control" th:field="${user.firstName}" />
+							<p class="error-message"
+								th:each="error: ${#fields.errors('firstName')}"
+								th:text="${error}">Validation error</p>
+						</div>
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('lastName')}? 'has-error':''">
+							<label for="lastName" class="control-label">Last name</label> <input
+								id="lastName" class="form-control" th:field="${user.lastName}" />
+							<p class="error-message"
+								th:each="error : ${#fields.errors('lastName')}"
+								th:text="${error}">Validation error</p>
+						</div>
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('email')}? 'has-error':''">
+							<label for="email" class="control-label">E-mail</label> <input
+								id="email" class="form-control" th:field="${user.email}" />
+							<p class="error-message"
+								th:each="error : ${#fields.errors('email')}" th:text="${error}">Validation
+								error</p>
+						</div>
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('userName')}? 'has-error':''">
+							<label for="userName" class="control-label">UserName</label> <input
+								id="userName" class="form-control" th:field="${user.username}" />
+							<p class="error-message"
+								th:each="error : ${#fields.errors('userName')}"
+								th:text="${error}">Validation error</p>
+						</div>
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
+							<label for="password" class="control-label">Password</label> <input
+								id="password" class="form-control" type="password"
+								th:field="${user.password}" />
+							<p class="error-message"
+								th:each="error : ${#fields.errors('password')}"
+								th:text="${error}">Validation error</p>
+						</div>
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('roles')}? 'has-error':''">
+							<label for="roles" class="control-label">Roles</label>
+							<ul class="checkbox-list">
+								<li th:each="role : ${allRoles}"><input type="checkbox"
+									th:value="${role}" th:field="*{roles}"
+									th:text="${role.role}" /></li>
+							</ul>
+							<p class="error-message"
+								th:each="error : ${#fields.errors('roles')}" th:text="${error}">Validation
+								error</p>
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success">Save</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript"
+		th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
+	<script type="text/javascript"
+		th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+
+</body>
+</html>

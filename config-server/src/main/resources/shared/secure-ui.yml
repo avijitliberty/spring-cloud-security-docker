@@ -39,6 +39,9 @@ report:
 users:
   url: http://localhost:8082/services/users 
   
+roles:
+  url: http://localhost:8082/services/roles
+  
 notes:
   url: http://localhost:8084/services/notes
   

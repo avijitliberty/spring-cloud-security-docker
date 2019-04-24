@@ -10,7 +10,7 @@
 	<h1>Spring Cloud Netflix Docker - Reports Page</h1>
 
 	<div class="row">
-		<div class="col-md-2"></div>
+<!-- 		<div class="col-md-2"></div> -->
 		<div class="col-md-8">
 			<p>
 				This is the <b>administration</b> zone
@@ -32,24 +32,6 @@
 					<td th:text="${toll.timestamp}"></td>
 				</tr>
 			</table>
-			
-			<table class="table table-striped">
-				<tr>
-					<th>User ID</th>
-					<th>Name</th>
-					<th>Email</th>
-					<th>Roles</th>
-					<th>Enabled</th>
-				</tr>
-				<tr th:each="user : ${users}">
-					<td th:text="${user.id}"></td>
-					<td th:text="${user.name}"></td>
-					<td th:text="${user.email}"></td>
-					<td th:text="${user.roles}"></td>
-					<td th:text="${user.enabled}"></td>
-				</tr>
-			</table>
-
 		</div>
 		<div class="col-md-2"></div>
 	</div>
