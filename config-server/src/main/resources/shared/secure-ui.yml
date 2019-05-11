@@ -10,9 +10,9 @@ spring:
 server:
   port: 8080
   contextPath: /
-  session:
-    cookie:
-      name: SECUREUISESSION
+ # session:
+ #   cookie:
+ #     name: SECUREUISESSION
 
 # Configure the Authorization Server and User Info Resource Server details
 security:

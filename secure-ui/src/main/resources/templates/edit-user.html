@@ -64,8 +64,8 @@
 							<label for="roles" class="control-label">Roles</label>
 							<ul class="checkbox-list">
 								<li th:each="role : ${allRoles}"><input type="checkbox"
-									th:value="${role}" th:field="*{roles}"
-									th:text="${role.role}" /></li>
+									th:field="*{roles}" th:value="${role.role}" /> <label
+									th:text="${role.role}">ROLE_USER</label></li>
 							</ul>
 							<p class="error-message"
 								th:each="error : ${#fields.errors('roles')}" th:text="${error}">Validation

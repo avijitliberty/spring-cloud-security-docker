@@ -42,26 +42,14 @@ public class UserController {
 		return principal;
 	}
 
-	/* Create User */
-	// @PreAuthorize("#oauth2.hasScope('write')")
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/users")
-	public User createUser(@Valid @RequestBody UserRegistrationDto user, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		User createdUser = userService.create(user);
-		// userService.authenticateUserAndSetSession(createdUser, user.getUserName(),
-		// user.getPassword(), request);
-		//request.login(user.getUserName(), user.getPassword());
-		return createdUser;
-	}
-
-	@RequestMapping(method = RequestMethod.POST, 
-			consumes = MediaType.APPLICATION_JSON_VALUE, 
-			produces = MediaType.APPLICATION_JSON_VALUE, 
-			path = "/authenticate")
-	public UsernamePasswordAuthenticationToken authenticate(@Valid @RequestBody UserRegistrationDto user, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		UsernamePasswordAuthenticationToken token =  userService.authenticateUserAndSetSession(user.getUserName(),user.getPassword(), request);
-		return token;
-		//response.sendRedirect(redirectUri);
-	}
+//	@RequestMapping(method = RequestMethod.POST, 
+//			consumes = MediaType.APPLICATION_JSON_VALUE, 
+//			produces = MediaType.APPLICATION_JSON_VALUE, 
+//			path = "/authenticate")
+//	public UsernamePasswordAuthenticationToken authenticate(@Valid @RequestBody UserRegistrationDto user, HttpServletRequest request,
+//			HttpServletResponse response) throws Exception {
+//		UsernamePasswordAuthenticationToken token =  userService.authenticateUserAndSetSession(user.getUserName(),user.getPassword(), request);
+//		return token;
+//		//response.sendRedirect(redirectUri);
+//	}
 }

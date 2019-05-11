@@ -8,6 +8,11 @@
 <body>
     <div layout:fragment="content" th:remove="tag">
     <h1>Spring Cloud Netflix Docker - Home Page</h1>
+    
+    <div th:if="${success}">
+		<div class="alert alert-info">You've successfully registered to our awesome app! <a href="/" th:href="@{/login}">SignIn here</a></div>
+	</div>
+    
 	<p>This is a public page, but you can navigate to protected pages
 		to trigger authentication.</p>
 	<p>Different content is shown depending on the role of the

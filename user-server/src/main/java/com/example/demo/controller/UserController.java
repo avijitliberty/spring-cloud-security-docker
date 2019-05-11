@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -60,7 +61,7 @@ public class UserController {
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/roles")
 	//@PreAuthorize("#oauth2.hasScope('read')")
-	public List<Role> getRoles() throws Exception {
+	public Set<Role> getRoles() throws Exception {
 		return roleService.findRoles();
 	}
 	

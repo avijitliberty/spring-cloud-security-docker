@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import java.security.Principal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +21,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.example.demo.model.Note;
@@ -45,34 +54,34 @@ import com.example.demo.model.UserRegistrationDto;
  */
 @Controller
 public class MyWebsiteController {
-	
+
 	@Value("${report.url}")
 	private String reportUrl;
-	
+
 	@Value("${users.url}")
 	private String usersUrl;
-	
+
 	@Value("${roles.url}")
 	private String rolesUrl;
-	
+
 	@Value("${notes.url}")
 	private String notesUrl;
-	
+
 	@Value("${auth.url}")
 	private String authUrl;
-	
-	@ModelAttribute("user")
-    public UserRegistrationDto userRegistrationDto() {
-        return new UserRegistrationDto();
-    }
-	
+
+	/*
+	 * @ModelAttribute("user") public UserRegistrationDto userRegistrationDto() {
+	 * return new UserRegistrationDto(); }
+	 */
+
 	@Autowired
 	private OAuth2ClientContext clientContext;
 
 	@Autowired
 	@Qualifier("authorizationCodeRestTemplate")
 	private OAuth2RestOperations authorizationCodeRestTemplate;
-	
+
 	@Autowired
 	@Qualifier("clientCredentialsRestTemplate")
 	private OAuth2RestOperations clientCredentialsRestTemplate;
@@ -81,10 +90,13 @@ public class MyWebsiteController {
 	 * Default index page to verify that our application works.
 	 */
 	@RequestMapping("/")
-	public String loadHome() {
+	public String loadHome(@RequestParam(value = "success", required = false) String success, Model model) {
+		if (success != null) {
+			model.addAttribute("success", true);
+		}
 		return "home";
 	}
-	
+
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@RequestMapping("/hello")
 	public String getGreeting() {
@@ -110,37 +122,81 @@ public class MyWebsiteController {
 		OAuth2AccessToken t = clientContext.getAccessToken();
 		System.out.println("Token: " + t.getValue());
 
-		ResponseEntity<ArrayList<TollUsage>> tolls = authorizationCodeRestTemplate.exchange(reportUrl, HttpMethod.GET, null,
-				new ParameterizedTypeReference<ArrayList<TollUsage>>() {
+		ResponseEntity<ArrayList<TollUsage>> tolls = authorizationCodeRestTemplate.exchange(reportUrl, HttpMethod.GET,
+				null, new ParameterizedTypeReference<ArrayList<TollUsage>>() {
 				});
 
 		model.addAttribute("tolls", tolls.getBody());
 
 		return "reports";
 	}
-	
-	@RequestMapping(method = RequestMethod.GET, 
-	                produces = MediaType.APPLICATION_JSON_VALUE, 
-	                path ="/users/{id}")
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/get-user/{id}")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String getUserById(Model model, @PathVariable Integer id) {
-		
-		ResponseEntity<User> userResponse = authorizationCodeRestTemplate.exchange(usersUrl + "/" + id, HttpMethod.GET, null,
-				new ParameterizedTypeReference<User>() {
+
+		ResponseEntity<User> userResponse = authorizationCodeRestTemplate.exchange(usersUrl + "/" + id, HttpMethod.GET,
+				null, new ParameterizedTypeReference<User>() {
 				});
-		
-		ResponseEntity<ArrayList<Role>> roleResponse = authorizationCodeRestTemplate.exchange(rolesUrl, HttpMethod.GET, null,
-				new ParameterizedTypeReference<ArrayList<Role>>() {
+
+		ResponseEntity<HashSet<Role>> roleResponse = authorizationCodeRestTemplate.exchange(rolesUrl, HttpMethod.GET,
+				null, new ParameterizedTypeReference<HashSet<Role>>() {
 				});
 
 		model.addAttribute("user", userResponse.getBody());
-		model.addAttribute("allRoles" , roleResponse.getBody());
-		
+		model.addAttribute("allRoles", roleResponse.getBody());
+
 		return "edit-user";
 	}
-	
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/delete-user/{id}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public String deleteUserById(Model model, @PathVariable Integer id) {
+
+		ResponseEntity<String> deleteResponse = authorizationCodeRestTemplate.exchange(usersUrl + "/" + id,
+				HttpMethod.DELETE, null, new ParameterizedTypeReference<String>() {
+				});
+
+		if (deleteResponse.getStatusCode() == HttpStatus.OK) {
+			System.out.println("user deleted " + deleteResponse.getBody());
+		}
+
+		ResponseEntity<ArrayList<User>> users = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.GET, null,
+				new ParameterizedTypeReference<ArrayList<User>>() {
+				});
+
+		model.addAttribute("users", users.getBody());
+		return "users";
+	}
+
+	@RequestMapping("/edit-user")
+	public String editUser(@Valid final User user, BindingResult result, Model model) {
+
+		if (result.hasErrors()) {
+			return "edit-user";
+		}
+
+		// request entity is created with request body and headers
+		HttpEntity<User> requestEntity = new HttpEntity<>(user);
+		ResponseEntity<User> responseEntity = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.PUT,
+				requestEntity, new ParameterizedTypeReference<User>() {
+				});
+
+		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+			User createdUser = responseEntity.getBody();
+			System.out.println("user response retrieved " + responseEntity.getBody());
+		}
+
+		ResponseEntity<ArrayList<User>> users = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.GET, null,
+				new ParameterizedTypeReference<ArrayList<User>>() {
+				});
+
+		model.addAttribute("users", users.getBody());
+		return "users";
+	}
+
 	@RequestMapping("/users")
-	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	// @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String loadUsers(Model model) {
 
 		OAuth2AccessToken t = clientContext.getAccessToken();
@@ -154,54 +210,44 @@ public class MyWebsiteController {
 
 		return "users";
 	}
-	
-	@RequestMapping("/signup")
-	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String showSignUpForm(Model model) {
-        return "registration";
-    }
-	
-	@RequestMapping("/registration")
-	//@PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String addUser(@ModelAttribute("user") @Valid UserRegistrationDto userDto, 
-            BindingResult result, HttpServletRequest request, Model model) {
-        if (result.hasErrors()) {
-            return "registration";
-        }
-        
-        Set<Role> rolesToAdd = new HashSet<Role>();
-        Role role = new Role("USER");
-        rolesToAdd.add(role);
-        userDto.setRoles(rolesToAdd);
-        
-        //request entity is created with request body and headers
-        HttpEntity<UserRegistrationDto> requestEntity = new HttpEntity<>(userDto);
 
-    	ResponseEntity<User> responseEntity = clientCredentialsRestTemplate.exchange(usersUrl, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<User>() {
+	@RequestMapping("/signup")
+	// @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public String showSignUpForm(Model model) {
+		model.addAttribute("user", new UserRegistrationDto());
+		//model.addAttribute("success", false);
+		return "registration";
+	}
+
+	@RequestMapping("/registration")
+	// @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public String addUser(@Valid final UserRegistrationDto userDto, BindingResult result, HttpServletRequest request,
+			Model model) {
+		if (result.hasErrors()) {
+			return "registration";
+		}
+
+		Set<Role> rolesToAdd = new HashSet<Role>();
+		Role role = new Role("USER");
+		rolesToAdd.add(role);
+		userDto.setRoles(rolesToAdd);
+
+		// request entity is created with request body and headers
+		HttpEntity<UserRegistrationDto> requestEntity = new HttpEntity<>(userDto);
+
+		ResponseEntity<User> responseEntity = clientCredentialsRestTemplate.exchange(usersUrl, HttpMethod.POST,
+				requestEntity, new ParameterizedTypeReference<User>() {
 				});
-    	if(responseEntity.getStatusCode() == HttpStatus.OK){
-            User createdUser = responseEntity.getBody();
-            System.out.println("user response retrieved " + responseEntity.getBody());
-            //return "redirect:/registration?success";
-            
-            /*ResponseEntity<UsernamePasswordAuthenticationToken> tokenEntity = template.exchange(authUrl, HttpMethod.POST, requestEntity,
-    				new ParameterizedTypeReference<UsernamePasswordAuthenticationToken>() {
-    				});
-            
-              //if(tokenEntity.getStatusCode() == HttpStatus.OK){
-                UsernamePasswordAuthenticationToken auth = tokenEntity.getBody();
-            	HttpSession session = request.getSession(true);
-                SecurityContext sc = SecurityContextHolder.getContext();
-                sc.setAuthentication(auth);
-                session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,sc);
-                session.setAttribute("principal.name", auth.getName());
-   			    session.setAttribute("authorities", auth.getAuthorities());
-            //}		
-*/        }
-    	return "redirect:/registration?success";
-    }
-	
+		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+			User createdUser = responseEntity.getBody();
+			System.out.println("user response retrieved " + responseEntity.getBody());
+			//model.addAttribute("success", true);
+			//model.addAttribute("user", userDto);
+			new SecurityContextLogoutHandler().logout(request, null, null);
+		}
+		return "redirect:/?success";
+	}
+
 	@RequestMapping("/notes")
 	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public String loadNotes(Model model) {
@@ -217,13 +263,13 @@ public class MyWebsiteController {
 
 		return "notes";
 	}
-	
+
 	/** Forbidden page. */
 	@RequestMapping("/403")
 	public String forbidden() {
 		return "403";
 	}
-	
+
 	/** Simulation of an exception. */
 	@RequestMapping("/simulateError")
 	public void simulateError() {

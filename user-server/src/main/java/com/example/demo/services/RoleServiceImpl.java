@@ -1,6 +1,6 @@
 package com.example.demo.services;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class RoleServiceImpl implements RoleService {
 	private RoleRepository roleRepository;
 
 	@Override
-	public List<Role> findRoles() throws Exception {
+	public Set<Role> findRoles() throws Exception {
 		return roleRepository.findAll();
 	}
 

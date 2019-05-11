@@ -38,8 +38,6 @@ public class UserDetailsServiceImpl implements UserService {
 
 		List<User> users = new ArrayList<User>();
 
-		try {
-
 			if (name != null && !name.trim().isEmpty()) {
 				User userByName = userRepository.findByusername(name);
 				if (userByName == null) {
@@ -58,23 +56,13 @@ public class UserDetailsServiceImpl implements UserService {
 				for(User user : userRepository.findAll()) {
 					users.add(user);
 		        }
-			}
-		} catch (HttpClientErrorException ex) {
-			log.error("User not found, throwing USER_NOT_FOUND exception");
-			throw new Exception(ex);
-
-		} catch (HttpServerErrorException ex) {
-			log.error("Unexpected Exception getting the User Information");
-			throw new Exception(ex);
-		} 
-
+			} 
 		return users;
 	}
 
 	@Override
 	public User create(UserRegistrationDto user) throws Exception {
 
-		try {
 
 			User existing = userRepository.findByusername(user.getUserName());
 
@@ -111,20 +99,10 @@ public class UserDetailsServiceImpl implements UserService {
 				log.info("new user has been created: {}", newUser.toString());
 				return userRepository.save(newUser);
 			}
-
-		} catch (HttpClientErrorException ex) {
-			log.error("User not found, throwing USER_NOT_FOUND exception");
-			throw new Exception(ex);
-
-		} catch (HttpServerErrorException ex) {
-			log.error("Unexpected Exception getting the User Information");
-			throw new Exception(ex);
-		} 
 	}
 
 	@Override
 	public User update(User user) throws Exception {
-		try {
 
 			User existing = userRepository.findByusername(user.getUsername());
 
@@ -161,23 +139,13 @@ public class UserDetailsServiceImpl implements UserService {
 								
 				log.info("user updated: {}", existing.toString());
 				return userRepository.save(existing);
-			}
-		} catch (HttpClientErrorException ex) {
-			log.error("User not found, throwing USER_NOT_FOUND exception");
-			throw new Exception(ex);
-
-		} catch (HttpServerErrorException ex) {
-			log.error("Unexpected Exception getting the User Information");
-			throw new Exception(ex);
-		} 
+			} 
 	}
 
 	@Override
 	public String delete(Integer id) throws Exception {
 
-		try {
-
-			User existing = userRepository.findOne(id);
+		    User existing = userRepository.findOne(id);
 
 			if (existing == null) {
 				log.info("user does not exist: " + id);
@@ -188,13 +156,5 @@ public class UserDetailsServiceImpl implements UserService {
 				log.info("deleted user: {}", id);
 				return "deleted user: " + id;
 			}
-		} catch (HttpClientErrorException ex) {
-			log.error("User not found, throwing USER_NOT_FOUND exception");
-			throw new Exception(ex);
-
-		} catch (HttpServerErrorException ex) {
-			log.error("Unexpected Exception getting the User Information");
-			throw new Exception(ex);
-		} 
 	}
 }

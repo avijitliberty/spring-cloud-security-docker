@@ -1,11 +1,11 @@
 package com.example.demo.services;
 
-import java.util.List;
+import java.util.Set;
 
 import com.example.demo.model.Role;
 
 public interface RoleService {
 	
-	List<Role> findRoles() throws Exception;
+	Set<Role> findRoles() throws Exception;
 
 }
