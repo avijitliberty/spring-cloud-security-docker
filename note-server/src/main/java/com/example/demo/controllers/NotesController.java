@@ -54,9 +54,6 @@ public class NotesController {
 		
 		if (createdBy != null && !createdBy.trim().isEmpty()) {
 			notes.addAll(noteService.findNotes(createdBy, null));
-			if (notes.isEmpty()) {
-				return new ResponseEntity(HttpStatus.NOT_FOUND);
-			}
 		} else {
 			notes.addAll(noteService.findNotes(null, null));
 		}

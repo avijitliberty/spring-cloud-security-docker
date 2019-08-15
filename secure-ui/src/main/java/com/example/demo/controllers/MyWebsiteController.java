@@ -148,10 +148,22 @@ public class MyWebsiteController {
 
 		return "edit-user";
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/get-note/{id}")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
+	public String getNoteById(Model model, @PathVariable Integer id) {
+
+		ResponseEntity<Note> notesResponse = authorizationCodeRestTemplate.exchange(notesUrl + "/" + id, HttpMethod.GET,
+				null, new ParameterizedTypeReference<Note>() {
+				});
+
+		model.addAttribute("note", notesResponse.getBody());
+		return "edit-note";
+	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/delete-user/{id}")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
-	public String deleteUserById(Model model, @PathVariable Integer id) {
+	public String deleteUser(Model model, @PathVariable Integer id) {
 
 		ResponseEntity<String> deleteResponse = authorizationCodeRestTemplate.exchange(usersUrl + "/" + id,
 				HttpMethod.DELETE, null, new ParameterizedTypeReference<String>() {
@@ -168,8 +180,32 @@ public class MyWebsiteController {
 		model.addAttribute("users", users.getBody());
 		return "users";
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/delete-note/{id}")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
+	public String deleteNote(Model model, @PathVariable Integer id, HttpServletRequest request) {
+		
+		String currentLoggedInUser = request.getUserPrincipal().getName();
 
-	@RequestMapping("/edit-user")
+		ResponseEntity<String> deleteResponse = authorizationCodeRestTemplate.exchange(notesUrl + "/" + id,
+				HttpMethod.DELETE, null, new ParameterizedTypeReference<String>() {
+				});
+
+		if (deleteResponse.getStatusCode() == HttpStatus.OK) {
+			System.out.println("note deleted " + deleteResponse.getBody());
+		}
+
+		ResponseEntity<ArrayList<Note>> responseEntity = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
+				new ParameterizedTypeReference<ArrayList<Note>>() {
+				});
+
+		model.addAttribute("notes", responseEntity.getBody());
+		return "notes";
+	}
+	
+	
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/edit-user")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public String editUser(@Valid final User user, BindingResult result, Model model) {
 
 		if (result.hasErrors()) {
@@ -194,6 +230,34 @@ public class MyWebsiteController {
 		model.addAttribute("users", users.getBody());
 		return "users";
 	}
+	
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/edit-note")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
+	public String editNote(@Valid final Note note, BindingResult result, Model model, HttpServletRequest request) {
+
+		if (result.hasErrors()) {
+			return "edit-note";
+		}
+		
+		String currentLoggedInUser = request.getUserPrincipal().getName();
+		// request entity is created with request body and headers
+		HttpEntity<Note> requestEntity = new HttpEntity<>(note);
+		ResponseEntity<Note> responseEntity = authorizationCodeRestTemplate.exchange(notesUrl, HttpMethod.PUT,
+				requestEntity, new ParameterizedTypeReference<Note>() {
+				});
+
+		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+			Note editedNote = responseEntity.getBody();
+			System.out.println("note response retrieved " + editedNote);
+		}
+
+		ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
+				new ParameterizedTypeReference<ArrayList<Note>>() {
+				});
+
+		model.addAttribute("notes", notes.getBody());
+		return "notes";
+	}
 
 	@RequestMapping("/users")
 	// @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -217,6 +281,13 @@ public class MyWebsiteController {
 		model.addAttribute("user", new UserRegistrationDto());
 		//model.addAttribute("success", false);
 		return "registration";
+	}
+	
+	@RequestMapping("/stickynote")
+	// @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public String showAddNoteForm(Model model) {
+		model.addAttribute("note", new Note());
+		return "add-note";
 	}
 
 	@RequestMapping("/registration")
@@ -250,12 +321,45 @@ public class MyWebsiteController {
 
 	@RequestMapping("/notes")
 	@PreAuthorize("hasAuthority('ROLE_USER')")
-	public String loadNotes(Model model) {
+	public String loadNotes(Model model, HttpServletRequest request) {
 
 		OAuth2AccessToken t = clientContext.getAccessToken();
+		String currentLoggedInUser = request.getUserPrincipal().getName();
 		System.out.println("Token: " + t.getValue());
 
-		ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl, HttpMethod.GET, null,
+		ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
+				new ParameterizedTypeReference<ArrayList<Note>>() {
+				});
+
+		model.addAttribute("notes", notes.getBody());
+
+		return "notes";
+	}
+	
+	@RequestMapping("/add-note")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
+	public String addNotes(@Valid final Note note, BindingResult result, Model model, HttpServletRequest request) {
+		
+		if (result.hasErrors()) {
+			return "add-note";
+		}
+
+
+		// request entity is created with request body and headers
+		HttpEntity<Note> requestEntity = new HttpEntity<>(note);
+
+		ResponseEntity<Note> responseEntity = authorizationCodeRestTemplate.exchange(notesUrl, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<Note>() {
+				});
+		
+		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+			Note createdNote = responseEntity.getBody();
+			System.out.println("note response retrieved " + createdNote);
+		}
+		
+		String currentLoggedInUser = request.getUserPrincipal().getName();
+
+		ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
 				new ParameterizedTypeReference<ArrayList<Note>>() {
 				});
 

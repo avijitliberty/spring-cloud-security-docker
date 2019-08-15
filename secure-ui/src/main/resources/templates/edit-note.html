@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	layout:decorate="~{fragments/layout}">
+<head>
+<title>Edit Note</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3">
+
+					<h1>Edit Notes</h1>
+					<form th:action="@{/edit-note}" th:object="${note}" method="post">
+
+						<p class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}"
+							th:each="error : ${#fields.errors('global')}" th:text="${error}">Validation
+							error</p>
+
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('topic')}? 'has-error':''">
+							<label for="topic" class="control-label">Topic</label> <input
+								id="topic" class="form-control" th:field="${note.topic}" />
+							<p class="error-message"
+								th:each="error: ${#fields.errors('topic')}"
+								th:text="${error}">Validation error</p>
+						</div>
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('subject')}? 'has-error':''">
+							<label for="lastName" class="control-label">Subject</label> <input
+								id="subject" class="form-control" th:field="${note.subject}" />
+							<p class="error-message"
+								th:each="error : ${#fields.errors('subject')}"
+								th:text="${error}">Validation error</p>
+						</div>
+						<div class="form-group"
+							th:classappend="${#fields.hasErrors('body')}? 'has-error':''">
+							<label for="email" class="control-label">Body</label> 
+							<textarea id="body" class="form-control" rows="5" th:field="*{body}"></textarea>
+							<p class="error-message"
+								th:each="error : ${#fields.errors('body')}" th:text="${error}">Validation
+								error</p>
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success">Save</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript"
+		th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
+	<script type="text/javascript"
+		th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+
+</body>
+</html>
