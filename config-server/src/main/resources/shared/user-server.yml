@@ -5,13 +5,15 @@ spring:
     username: oauth2-user
     password: oauth2-password
     platform: mysql
-    initialize: true
+    # Set to true to initialize a database using Spring JDBC
+    initialize: false
     schema: classpath:/scripts/schema.sql
     data: classpath:/scripts/data.sql
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+      # Initialize a database using Hibernate with standard Hibernate property values "none", "validate", "update", "create-drop"
+      ddl-auto: none
     show-sql: true
 
 # Make the application available at http://localhost:8082
