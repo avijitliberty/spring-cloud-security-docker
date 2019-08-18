@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,13 +49,12 @@ import com.example.demo.model.User;
 import com.example.demo.model.UserRegistrationDto;
 
 /**
- * Web MVC Controller serving two pages:
- *
- * - http://localhost:8080/ -> Shows 'Hello world!' - http://localhost:8080/time
- * -> Shows a page with the current time
+ * Web MVC Controller serving secure-ui
  */
 @Controller
 public class MyWebsiteController {
+	
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Value("${report.url}")
 	private String reportUrl;
@@ -69,11 +70,6 @@ public class MyWebsiteController {
 
 	@Value("${auth.url}")
 	private String authUrl;
-
-	/*
-	 * @ModelAttribute("user") public UserRegistrationDto userRegistrationDto() {
-	 * return new UserRegistrationDto(); }
-	 */
 
 	@Autowired
 	private OAuth2ClientContext clientContext;
@@ -120,7 +116,7 @@ public class MyWebsiteController {
 	public String loadReports(Model model) {
 
 		OAuth2AccessToken t = clientContext.getAccessToken();
-		System.out.println("Token: " + t.getValue());
+		log.debug("Token: " + t.getValue());
 
 		ResponseEntity<ArrayList<TollUsage>> tolls = authorizationCodeRestTemplate.exchange(reportUrl, HttpMethod.GET,
 				null, new ParameterizedTypeReference<ArrayList<TollUsage>>() {
@@ -170,14 +166,12 @@ public class MyWebsiteController {
 				});
 
 		if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-			System.out.println("user deleted " + deleteResponse.getBody());
+			ResponseEntity<ArrayList<User>> users = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.GET, null,
+					new ParameterizedTypeReference<ArrayList<User>>() {
+					});
+
+			model.addAttribute("users", users.getBody());
 		}
-
-		ResponseEntity<ArrayList<User>> users = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.GET, null,
-				new ParameterizedTypeReference<ArrayList<User>>() {
-				});
-
-		model.addAttribute("users", users.getBody());
 		return "users";
 	}
 	
@@ -192,14 +186,13 @@ public class MyWebsiteController {
 				});
 
 		if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-			System.out.println("note deleted " + deleteResponse.getBody());
+			log.info("note deleted " + deleteResponse.getBody());
+			ResponseEntity<ArrayList<Note>> responseEntity = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
+					new ParameterizedTypeReference<ArrayList<Note>>() {
+					});
+
+			model.addAttribute("notes", responseEntity.getBody());
 		}
-
-		ResponseEntity<ArrayList<Note>> responseEntity = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
-				new ParameterizedTypeReference<ArrayList<Note>>() {
-				});
-
-		model.addAttribute("notes", responseEntity.getBody());
 		return "notes";
 	}
 	
@@ -219,15 +212,13 @@ public class MyWebsiteController {
 				});
 
 		if (responseEntity.getStatusCode() == HttpStatus.OK) {
-			User createdUser = responseEntity.getBody();
-			System.out.println("user response retrieved " + responseEntity.getBody());
+			log.info("user response retrieved " + responseEntity.getBody());
+			ResponseEntity<ArrayList<User>> users = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.GET, null,
+					new ParameterizedTypeReference<ArrayList<User>>() {
+					});
+
+			model.addAttribute("users", users.getBody());
 		}
-
-		ResponseEntity<ArrayList<User>> users = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.GET, null,
-				new ParameterizedTypeReference<ArrayList<User>>() {
-				});
-
-		model.addAttribute("users", users.getBody());
 		return "users";
 	}
 	
@@ -248,23 +239,22 @@ public class MyWebsiteController {
 
 		if (responseEntity.getStatusCode() == HttpStatus.OK) {
 			Note editedNote = responseEntity.getBody();
-			System.out.println("note response retrieved " + editedNote);
+			log.info("note response retrieved " + editedNote);
+			ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
+					new ParameterizedTypeReference<ArrayList<Note>>() {
+					});
+
+			model.addAttribute("notes", notes.getBody());
 		}
-
-		ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
-				new ParameterizedTypeReference<ArrayList<Note>>() {
-				});
-
-		model.addAttribute("notes", notes.getBody());
 		return "notes";
 	}
 
 	@RequestMapping("/users")
-	// @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String loadUsers(Model model) {
 
 		OAuth2AccessToken t = clientContext.getAccessToken();
-		System.out.println("Token: " + t.getValue());
+		log.debug("Token: " + t.getValue());
 
 		ResponseEntity<ArrayList<User>> users = authorizationCodeRestTemplate.exchange(usersUrl, HttpMethod.GET, null,
 				new ParameterizedTypeReference<ArrayList<User>>() {
@@ -309,12 +299,10 @@ public class MyWebsiteController {
 		ResponseEntity<User> responseEntity = clientCredentialsRestTemplate.exchange(usersUrl, HttpMethod.POST,
 				requestEntity, new ParameterizedTypeReference<User>() {
 				});
-		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+		if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
 			User createdUser = responseEntity.getBody();
-			System.out.println("user response retrieved " + responseEntity.getBody());
-			//model.addAttribute("success", true);
-			//model.addAttribute("user", userDto);
-			new SecurityContextLogoutHandler().logout(request, null, null);
+			log.info("user response retrieved " + createdUser);
+		    new SecurityContextLogoutHandler().logout(request, null, null);
 		}
 		return "redirect:/?success";
 	}
@@ -325,7 +313,7 @@ public class MyWebsiteController {
 
 		OAuth2AccessToken t = clientContext.getAccessToken();
 		String currentLoggedInUser = request.getUserPrincipal().getName();
-		System.out.println("Token: " + t.getValue());
+		log.debug("Token: " + t.getValue());
 
 		ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
 				new ParameterizedTypeReference<ArrayList<Note>>() {
@@ -347,24 +335,20 @@ public class MyWebsiteController {
 
 		// request entity is created with request body and headers
 		HttpEntity<Note> requestEntity = new HttpEntity<>(note);
-
+		String currentLoggedInUser = request.getUserPrincipal().getName();
 		ResponseEntity<Note> responseEntity = authorizationCodeRestTemplate.exchange(notesUrl, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<Note>() {
 				});
 		
-		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+		if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
 			Note createdNote = responseEntity.getBody();
-			System.out.println("note response retrieved " + createdNote);
+			log.info("note response retrieved " + createdNote);
+			ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
+					new ParameterizedTypeReference<ArrayList<Note>>() {
+					});
+
+			model.addAttribute("notes", notes.getBody());
 		}
-		
-		String currentLoggedInUser = request.getUserPrincipal().getName();
-
-		ResponseEntity<ArrayList<Note>> notes = authorizationCodeRestTemplate.exchange(notesUrl + "?createdBy=" + currentLoggedInUser, HttpMethod.GET, null,
-				new ParameterizedTypeReference<ArrayList<Note>>() {
-				});
-
-		model.addAttribute("notes", notes.getBody());
-
 		return "notes";
 	}
 

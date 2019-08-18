@@ -59,7 +59,6 @@ public class LoginController {
 			}
 		}
 		model.put("scopes", scopes);
-		System.out.println(model);
 		return new ModelAndView("access_confirmation", model);
 	}
 
