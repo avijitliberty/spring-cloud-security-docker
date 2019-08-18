@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,6 @@ public class UserController {
 	private RoleService roleService;
 	
 	/* Create User */
-	//@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.POST, 
 			        consumes = MediaType.APPLICATION_JSON_VALUE, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
@@ -47,7 +47,7 @@ public class UserController {
 	@RequestMapping(method = RequestMethod.GET, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/users")
-	//@PreAuthorize("#oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
 	public List<User> getUser(@RequestParam(value = "name", required = false) String name) throws Exception {
 		if (name != null && !name.trim().isEmpty()) {
 			return userService.findUsers(name, null);
@@ -60,13 +60,13 @@ public class UserController {
 	@RequestMapping(method = RequestMethod.GET, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/roles")
-	//@PreAuthorize("#oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
 	public Set<Role> getRoles() throws Exception {
 		return roleService.findRoles();
 	}
 	
 	/* Read Users by Id */
-	//@PreAuthorize("#oauth2.hasScope('read')")
+	@PreAuthorize("#oauth2.hasScope('read')")
 	@RequestMapping(method = RequestMethod.GET, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
 			        path = "/users/{id}")
@@ -75,7 +75,7 @@ public class UserController {
 	}
 	
 	/* Update */
-	//@PreAuthorize("#oauth2.hasScope('write')")
+	@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.PUT, 
 			        consumes = MediaType.APPLICATION_JSON_VALUE, 
 			        produces = MediaType.APPLICATION_JSON_VALUE, 
@@ -85,7 +85,7 @@ public class UserController {
 	}
 
 	/* Delete */
-	//@PreAuthorize("#oauth2.hasScope('write')")
+	@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(method = RequestMethod.DELETE, 
 			        path = "/users/{id}")
 	public String deleteUser(@PathVariable Integer id) throws Exception {
